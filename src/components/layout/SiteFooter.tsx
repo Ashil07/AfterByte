@@ -1,0 +1,83 @@
+import Image from "next/image";
+import { navigation } from "@/content/chapters";
+import { site } from "@/content/site";
+import { Year } from "./Year";
+
+export function SiteFooter() {
+  return (
+    <footer className="relative border-t border-line bg-ink">
+      <div className="frame pb-8 pt-16 md:pt-24">
+        <div className="grid-12 gap-y-10">
+          <p className="col-span-12 max-w-[22ch] font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.05] md:col-span-6">
+            Thoughtfully designed. <em className="text-ice">Intelligently built.</em>
+          </p>
+          <nav aria-label="Footer" className="col-span-6 md:col-span-3">
+            <p className="label mb-4 text-mute">Explore</p>
+            <ul>
+              {navigation.map((n) => (
+                <li key={n.href}>
+                  <a href={n.href} className="inline-block py-2 text-paper/80 transition-colors hover:text-paper">
+                    {n.label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a href="#contact" className="inline-block py-2 text-paper/80 transition-colors hover:text-paper">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <div className="col-span-6 md:col-span-3">
+            <p className="label mb-4 text-mute">Elsewhere</p>
+            {site.email || site.phone.tel || site.socials.length ? (
+              <ul>
+                {site.phone.tel && (
+                  <li>
+                    <a href={`tel:${site.phone.tel}`} className="inline-block py-2 text-paper/80 hover:text-paper">
+                      {site.phone.display}
+                    </a>
+                  </li>
+                )}
+                {site.email && (
+                  <li>
+                    <a href={`mailto:${site.email}`} className="inline-block py-2 text-paper/80 hover:text-paper">
+                      {site.email}
+                    </a>
+                  </li>
+                )}
+                {site.socials.map((s) => (
+                  <li key={s.href}>
+                    <a href={s.href} rel="me noopener" target="_blank" className="inline-block py-2 text-paper/80 hover:text-paper">
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-paper/60">The contact form is the best way to reach us.</p>
+            )}
+          </div>
+        </div>
+
+        <Image
+          src="/brand/wordmark.png"
+          alt="AfterByte"
+          width={1706}
+          height={514}
+          sizes="(min-width: 1600px) 1500px, 92vw"
+          className="mt-20 h-auto w-full select-none opacity-95 md:mt-28"
+        />
+
+        <div className="label mt-8 flex flex-wrap items-center justify-between gap-4 text-mute">
+          <p>
+            © <Year /> {site.name}
+          </p>
+          <a href="#top" className="inline-block py-3.5 transition-colors hover:text-paper">
+            Back to the beginning ↑
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}
