@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens. See CLAUDE.md §3 before changing anything here.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #08090b;
+  --color-ink-2: #111318;
+  --color-ink-3: #181b21;
+  --color-paper: #f5f5f2;
+  --color-mute: #92949d;
+  --color-ice: #a7c8e8;
+  --color-warm: #ede6da;
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-line-strong: rgb(255 255 255 / 0.18);
+
+  --font-serif: var(--font-instrument-serif), "Times New Roman", serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --breakpoint-xs: 30rem;
+}
+
+:root {
+  --frame-pad: clamp(1.25rem, 4vw, 4rem);
+  --header-h: 4rem;
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-ink);
+  /* Never let a stray transform widen the layout viewport on mobile. */
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: var(--header-h);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-ice);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ice);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout primitives
+   --------------------------------------------------------------------------- */
+@utility frame {
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+  padding-inline: var(--frame-pad);
+}
+
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 2rem);
+}
+
+/* Small uppercase metadata — chapter marks, captions, table heads. */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Editorial serif display sizes. */
+@utility display-xl {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(3.25rem, 9vw, 10rem);
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+}
+
+@utility display-l {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 6.4vw, 6.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.012em;
+}
+
+@utility display-m {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* A faint dot texture that echoes the halftone motif without a canvas. */
+@utility dot-texture {
+  background-image: radial-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1.2px);
+  background-size: 14px 14px;
+}
+
+/* Hairline rule used between list rows. */
+@utility rule {
+  border-top: 1px solid var(--color-line);
+}
+
+/* ---------------------------------------------------------------------------
+   Intro gating: when JS is available (html.js), hero intro elements start
+   hidden and GSAP reveals them. A late CSS fallback guarantees visibility if
+   the script never runs its timeline.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-intro] {
+    opacity: 0;
+    animation: intro-fallback 0s linear 3s forwards;
+  }
+  .js [data-intro].is-revealed {
+    animation: none;
+  }
+}
+
+@keyframes intro-fallback {
+  to {
+    opacity: 1;
+  }
+}
+
+/* SplitText line masks must not clip descenders of the serif. */
+.split-line-mask {
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+/* ---------------------------------------------------------------------------
+   Chapter 03 pinned layout. Only applies while JS has set data-pinned (desktop
+   with motion allowed). Headline and statement share one grid cell so one can
+   replace the other; fragments sit in an aligned row at the bottom.
+   --------------------------------------------------------------------------- */
+.friction[data-pinned] .friction-stage {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 100vh;
+  padding-top: calc(var(--header-h) + 1.75rem);
+  padding-bottom: clamp(1.5rem, 4vh, 3rem);
+}
+.friction[data-pinned] .friction-head,
+.friction[data-pinned] .friction-statement {
+  grid-row: 2;
+  grid-column: 1;
+  position: relative;
+  z-index: 2;
+}
+.friction[data-pinned] .friction-statement {
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  align-self: start;
+}
+.friction[data-pinned] .friction-grid {
+  grid-row: 3;
+  align-self: end;
+  margin-top: 0;
+  position: relative;
+}
+.friction[data-pinned] .friction-clean,
+.friction[data-pinned] .friction-solution {
+  display: block;
+}
+.friction[data-pinned] .friction-line {
+  display: block;
+  position: absolute;
+  inset-inline: 0;
+  top: -1.5rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-ice) 55%, transparent);
+  transform-origin: left center;
+}
+@media (max-height: 760px) {
+  .friction[data-pinned] .friction-head {
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
+  }
+}
+
+/* Chapter 05 sticky panel: only the active demo is visible. The outgoing demo
+   fades first, then the incoming one, so two interfaces never blend. */
+.service-panel > [data-demo] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease-out,
+    visibility 0s linear 0.3s;
+}
+.service-panel[data-active="web"] > [data-demo="web"],
+.service-panel[data-active="app"] > [data-demo="app"],
+.service-panel[data-active="systems"] > [data-demo="systems"] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.55s var(--ease-out-soft) 0.25s,
+    visibility 0s linear 0s;
+}
+
+/* Fallback system grid in chapter 04 is only needed where chapter 03 does not
+   run its pinned clean-up sequence (mobile, reduced motion, no JS). */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .js .system-fallback {
+    display: none;
+  }
+}
+
+/* Thin custom scrollbar for inner demo panes. */
+.demo-scroll {
+  scrollbar-width: none;
+}
+.demo-scroll::-webkit-scrollbar {
+  display: none;
+}
