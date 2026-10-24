@@ -16,7 +16,7 @@ const steps = [
 ];
 
 /**
- * 09 — Next chapter. The closing halftone mirrors the opening and brightens as
+ * 09 — Contact. The closing halftone mirrors the opening and brightens as
  * the visitor arrives, so the story ends where it began.
  */
 export function Contact() {

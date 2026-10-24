@@ -164,7 +164,7 @@ export function Friction() {
             const Messy = messyFaces[p.id];
             const Clean = cleanFaces[p.id];
             return (
-              <li key={p.id} data-card className="relative will-change-transform">
+              <li key={p.id} data-card className="relative">
                 <div aria-hidden className="grid h-[13.5rem] grid-rows-[minmax(0,1fr)] [grid-template-areas:'face'] *:[grid-area:face]">
                   <div data-messy>
                     <Messy />

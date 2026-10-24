@@ -1,12 +1,10 @@
 import { Approach } from "@/components/chapters/Approach";
 import { Contact } from "@/components/chapters/contact/Contact";
 import { Friction } from "@/components/chapters/friction/Friction";
+import { OptionalChapter } from "@/components/chapters/OptionalChapter";
 import { Opening } from "@/components/chapters/Opening";
 import { Services } from "@/components/chapters/Services";
-import { Team } from "@/components/chapters/Team";
-import { TurningPoint } from "@/components/chapters/TurningPoint";
 import { Vision } from "@/components/chapters/Vision";
-import { Work } from "@/components/chapters/Work";
 import { isChapterEnabled } from "@/content/chapters";
 
 /**
@@ -19,10 +17,10 @@ export default function Home() {
       <Opening />
       <Vision />
       <Friction />
-      {isChapterEnabled("turning-point") && <TurningPoint />}
+      {isChapterEnabled("turning-point") && <OptionalChapter id="turning-point" />}
       <Services />
-      {isChapterEnabled("work") && <Work />}
-      {isChapterEnabled("team") && <Team />}
+      {isChapterEnabled("work") && <OptionalChapter id="work" />}
+      {isChapterEnabled("team") && <OptionalChapter id="team" />}
       <Approach />
       <Contact />
     </>

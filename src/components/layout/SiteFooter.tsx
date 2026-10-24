@@ -5,7 +5,9 @@ import { Year } from "./Year";
 
 /** Labels sit above their value on phones and beside it from `xs` up. */
 const term = "label mt-3 text-mute first:mt-0 xs:mt-0 xs:pt-0.5";
-const link = "inline-block py-2 text-paper/80 transition-colors hover:text-paper";
+/** Same underline-grow hover as the text buttons. */
+const link =
+  "relative inline-block py-2 text-paper/80 transition-colors hover:text-paper after:absolute after:inset-x-0 after:bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out-soft hover:after:scale-x-100";
 
 /** "https://www.instagram.com/afterbyte.studio/" → "@afterbyte.studio" */
 const handle = (href: string) => {

@@ -40,14 +40,14 @@ export function ApproachPrinciple({ principle, index }: { principle: Principle; 
               {principle.title}
               <Plus
                 aria-hidden
-                className={cn("size-4 shrink-0 text-mute transition-transform duration-500 ease-out-soft", open && "rotate-45")}
+                className={cn("size-4 shrink-0 text-mute transition-transform duration-300 ease-out-soft", open && "rotate-45")}
               />
             </button>
           </h3>
           <div
             id={panel}
             inert={!open}
-            className={cn("grid transition-[grid-template-rows] duration-500 ease-out-soft", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}
+            className={cn("grid transition-[grid-template-rows] duration-300 ease-out-soft", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}
           >
             <p className="overflow-hidden text-paper/70">
               <span className="block max-w-[48ch] pb-3">{principle.body}</span>

@@ -44,7 +44,7 @@ export function Magnetic({ children, strength = 6 }: { children: ReactNode; stre
   );
 
   return (
-    <span ref={ref} className="inline-block will-change-transform">
+    <span ref={ref} className="inline-block">
       {children}
     </span>
   );

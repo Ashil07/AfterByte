@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { MOTION, gsap } from "@/components/motion/gsap";
 import { Button } from "@/components/ui/Button";
 import { serviceOptions } from "@/content/services";
 import { site } from "@/content/site";
@@ -50,7 +51,7 @@ function Field({
         {optional && <span className="normal-case tracking-normal text-mute/70">Optional</span>}
       </label>
       {children}
-      <p id={`f-${id}-error`} className={cn("mt-2 min-h-[1.25rem] text-[0.875rem] text-[#f0b9a8]", !error && "invisible")}>
+      <p id={`f-${id}-error`} className={cn("mt-2 min-h-[1.25rem] text-[0.875rem] text-error", !error && "invisible")}>
         {error}
       </p>
     </div>
@@ -58,7 +59,7 @@ function Field({
 }
 
 const control =
-  "mt-2 w-full rounded-none border-0 border-b border-line-strong bg-transparent px-0 py-3 text-[1.0625rem] text-paper placeholder:text-mute/60 transition-colors duration-300 focus:border-ice focus:outline-none focus-visible:outline-none aria-[invalid=true]:border-[#f0b9a8]";
+  "mt-2 w-full rounded-none border-0 border-b border-line-strong bg-transparent px-0 py-3 text-[1.0625rem] text-paper placeholder:text-mute/85 transition-colors duration-300 focus:border-ice focus:outline-none focus-visible:outline-none aria-[invalid=true]:border-error";
 
 export function ContactForm() {
   const [values, setValues] = useState<Values>(empty);
@@ -136,6 +137,14 @@ export function ContactForm() {
     }
     requestAnimationFrame(() => statusRef.current?.focus());
   }
+
+  // The thank-you note rises in instead of replacing the form in one frame.
+  useEffect(() => {
+    const note = statusRef.current;
+    if (status !== "success" || !note) return;
+    const still = window.matchMedia(MOTION.reduced).matches;
+    gsap.from(note.children, { opacity: 0, y: still ? 0 : 10, duration: 0.5, stagger: 0.06, ease: "expo.out" });
+  }, [status]);
 
   if (status === "success") {
     return (
@@ -268,7 +277,7 @@ export function ContactForm() {
 
       <div id="form-status" ref={statusRef} tabIndex={-1} role="alert" aria-live="assertive" className="outline-none">
         {status === "error" && (
-          <div className="mt-8 border-l-2 border-[#f0b9a8] pl-4">
+          <div className="mt-8 border-l-2 border-error pl-4">
             <p className="text-paper">{failure}</p>
             {site.email && (
               <p className="mt-1 text-paper/70">

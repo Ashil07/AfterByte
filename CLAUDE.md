@@ -72,6 +72,7 @@ halftone dots in diagonal light bands.
 | `mute` | `#92949D` | secondary text (≈6.8:1 on ink) |
 | `ice` | `#A7C8E8` | accent: focus ring, emphasis italics, active states, solutions |
 | `warm` | `#EDE6DA` | warm dot tone; the paper note in chapter 03 |
+| `error` | `#F0B9A8` | form error text and the failure notice |
 | `line` / `line-strong` | white 10% / 18% | hairlines and borders |
 
 No gradient text, glow blobs, glassmorphism or purple. The only gradients are
@@ -200,7 +201,9 @@ projects, team, services or problems.
 
 - **Showing / hiding chapters:** set `enabled` in `src/content/chapters.ts`. To bring
   back Selected Work or the Team, flip `work` / `team` to `true` — `page.tsx`, the
-  numbering, header indicator, mobile menu and nav all follow.
+  numbering, header indicator, mobile menu and nav all follow. Turning point, Work
+  and Team render through `chapters/OptionalChapter.tsx` (client-side dynamic
+  imports), so their code is only downloaded when they are enabled.
 - **Projects:** edit `src/content/projects.ts`. Add images to `public/work/` (≈1600px
   wide, webp/jpg). Remove `placeholder: true` once every field is real. `outcome` only
   if client-verified. Order in the array = order on the page; layouts rotate every 3.

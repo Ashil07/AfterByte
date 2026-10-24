@@ -17,7 +17,7 @@ const allChapters = [
   // Hidden until real team profiles are ready — content lives in src/content/team.ts.
   { id: "team", title: "The team", enabled: false },
   { id: "approach", title: "Our approach", enabled: true },
-  { id: "contact", title: "Next chapter", enabled: true },
+  { id: "contact", title: "Contact", enabled: true },
 ] as const;
 
 export type ChapterId = (typeof allChapters)[number]["id"];

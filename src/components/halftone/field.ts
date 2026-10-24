@@ -80,9 +80,10 @@ export function fieldAt(shape: FieldShape, u: number, v: number, aspect: number,
   const ambient = 0.05 + 0.06 * noise(u * 12, v * 12, seed + 11);
   switch (shape) {
     case "hero": {
-      // Calm zone behind the headline (bottom-left) so type stays legible.
+      // Calm zone behind the headline so type stays legible: bottom-left on wide
+      // screens, the whole lower band on portrait ones, where the copy spans the width.
       const [i, t] = heroAt(u, v, seed);
-      const m = smoothstep(0.5, 0.66, v) * (1 - smoothstep(0.42, 0.72, u));
+      const m = aspect < 1 ? smoothstep(0.46, 0.6, v) : smoothstep(0.5, 0.66, v) * (1 - smoothstep(0.42, 0.72, u));
       return [i * (1 - 0.78 * m), t];
     }
     case "closing": {
