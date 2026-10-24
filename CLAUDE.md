@@ -206,6 +206,16 @@ projects, team, services or problems.
   `socials`). Empty values are hidden everywhere (footer, contact, form failure
   message, JSON-LD). Current: email afterbytestudio.business@gmail.com, phone
   +91 98456 35981, Instagram @afterbyte.studio.
+- **SEO:** `src/content/site.ts` holds `seoTitle` (search-result title), `description`
+  (keep ≈155–160 characters), `location` (Mangaluru / Mangalore, Karnataka) and
+  `keywords`. `app/layout.tsx` turns these into metadata, `en-IN` locale, geo tags and
+  JSON-LD (`ProfessionalService` with city-level address, areaServed, services, plus
+  `WebSite`). The same location and service words appear in visible copy — hero label,
+  Services intro, Contact (“Based in …”) and the footer paragraph — because Google
+  ranks on what people can read. Keep them consistent with the Google Business
+  Profile (same name, phone, city). Never add ratings, prices or a street address to
+  structured data unless they are real and shown on the page. `GOOGLE_SITE_VERIFICATION`
+  (env) emits the Search Console meta tag. `app/manifest.ts` serves the web manifest.
 - **Chapter 03 fragments:** `src/content/problems.ts` (copy + chaos positions) and
   `chapters/friction/faces.tsx` (UI). Demo data is fictional and labelled as such.
 - **Placeholders** render a visible “Placeholder” label. Search for `placeholder: true`.
@@ -226,7 +236,7 @@ npm run assets         # regenerate brand/placeholder images (needs Python 3 + P
 ```
 
 **Environment** (see `.env.example`; set in the host’s dashboard, never commit):
-`NEXT_PUBLIC_SITE_URL`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, and either
+`NEXT_PUBLIC_SITE_URL`, `GOOGLE_SITE_VERIFICATION` (optional), `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, and either
 `RESEND_API_KEY` or `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_SECURE`.
 
 **Hosting:** any Node host that runs Next.js 16 (Vercel works with zero config; without

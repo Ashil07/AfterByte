@@ -7,8 +7,28 @@ export type SocialLink = { label: string; href: string };
 export const site = {
   name: "AfterByte",
   tagline: "Thoughtfully designed. Intelligently built.",
+  /** Search-result title: what we do and where, ahead of the brand line. */
+  seoTitle: "AfterByte — Website & App Development in Mangalore",
+  /** Meta description (~160 characters shows in full on Google). */
   description:
-    "AfterByte designs and builds websites, apps, business systems and automations for small businesses, startups and people with an idea — thoughtfully scoped and priced within reach.",
+    "Website and app development in Mangalore (Mangaluru). AfterByte designs and builds websites, mobile apps, business software and AI automation at fair prices.",
+  /** Where we are. Used in structured data and the visible location lines. */
+  location: { city: "Mangaluru", cityAlt: "Mangalore", region: "Karnataka", country: "IN", countryName: "India" },
+  /** Phrases people search for. Each should also appear in the visible copy. */
+  keywords: [
+    "AfterByte",
+    "website development Mangalore",
+    "web design Mangalore",
+    "app development Mangalore",
+    "mobile app developers Mangaluru",
+    "freelance web developer Mangalore",
+    "freelancers in Mangalore",
+    "software development company Mangalore",
+    "business management software",
+    "e-commerce website development",
+    "AI automation for small business",
+    "web development Karnataka",
+  ],
   /**
    * Public URL used for canonical links, sitemap and structured data.
    * NEXT_PUBLIC_SITE_URL wins (set it once a custom domain is live); on Vercel

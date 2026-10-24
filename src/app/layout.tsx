@@ -19,13 +19,18 @@ const sans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], display:
 
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
 
-const title = `${site.name} — ${site.tagline}`;
+const title = site.seoTitle;
+const { location } = site;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: title, template: `%s — ${site.name}` },
   description: site.description,
+  keywords: [...site.keywords],
   applicationName: site.name,
+  category: "technology",
+  creator: site.name,
+  publisher: site.name,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -33,10 +38,20 @@ export const metadata: Metadata = {
     siteName: site.name,
     title,
     description: site.description,
-    locale: "en",
+    locale: "en_IN",
   },
   twitter: { card: "summary_large_image", title, description: site.description },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  // Google Search Console's HTML-tag method: set GOOGLE_SITE_VERIFICATION to the token it gives you.
+  ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
+  other: {
+    "geo.region": `${location.country}-KA`,
+    "geo.placename": `${location.city} (${location.cityAlt}), ${location.region}`,
+  },
 };
 
 export const viewport: Viewport = {
@@ -46,31 +61,82 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+/**
+ * Structured data for Google: the business (a local ProfessionalService with
+ * its city, contact details and services) and the website. Only facts that are
+ * also visible on the page belong here — no ratings, prices or street address
+ * until they are real.
+ */
+const business = `${site.url}/#business`;
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: site.name,
-  slogan: site.tagline,
-  description: site.description,
-  url: site.url,
-  logo: `${site.url}/brand/wordmark.png`,
-  ...(site.email ? { email: site.email } : {}),
-  ...(site.phone.tel ? { telephone: site.phone.tel } : {}),
-  ...(site.socials.length ? { sameAs: site.socials.map((s) => s.href) } : {}),
-  hasOfferCatalog: {
-    "@type": "OfferCatalog",
-    name: "Services",
-    itemListElement: services.map((s) => ({
-      "@type": "Offer",
-      itemOffered: { "@type": "Service", name: s.title, description: s.summary },
-    })),
-  },
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": business,
+      name: site.name,
+      alternateName: [`${site.name} Studio`, "Afterbyte"],
+      slogan: site.tagline,
+      description: site.description,
+      url: site.url,
+      logo: { "@type": "ImageObject", url: `${site.url}/icon.png`, width: 512, height: 512 },
+      image: `${site.url}/opengraph-image.jpg`,
+      ...(site.email ? { email: site.email } : {}),
+      ...(site.phone.tel ? { telephone: site.phone.tel } : {}),
+      ...(site.socials.length ? { sameAs: site.socials.map((s) => s.href) } : {}),
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: location.city,
+        addressRegion: location.region,
+        addressCountry: location.country,
+      },
+      areaServed: [
+        { "@type": "City", name: location.city, alternateName: location.cityAlt },
+        { "@type": "State", name: location.region },
+        { "@type": "Country", name: location.countryName },
+      ],
+      knowsAbout: [
+        "Website development",
+        "Web design",
+        "Mobile app development",
+        "E-commerce websites",
+        "Business management software",
+        "Workflow automation",
+        "AI automation",
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Services",
+        itemListElement: services.map((s) => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: s.title,
+            description: s.summary,
+            serviceType: s.capabilities.join(", "),
+            areaServed: { "@type": "City", name: location.city },
+            provider: { "@id": business },
+          },
+        })),
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${site.url}/#website`,
+      url: site.url,
+      name: site.name,
+      alternateName: `${site.name} Studio`,
+      description: site.description,
+      inLanguage: "en-IN",
+      publisher: { "@id": business },
+    },
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
       className={`${serif.variable} ${sans.variable} ${mono.variable}`}
       // html.js is added before paint by the inline script below.
       suppressHydrationWarning

@@ -56,6 +56,18 @@ Set `NEXT_PUBLIC_SITE_URL` to the live URL (canonical links, sitemap, Open Graph
 custom domain is connected. On Vercel it can be left unset: the project’s production
 `*.vercel.app` domain is used automatically.
 
+## Search (SEO)
+
+The title, description, location and keywords live in `src/content/site.ts`.
+To get listed and ranked:
+
+1. Connect a custom domain in Vercel and set `NEXT_PUBLIC_SITE_URL` to it.
+2. In Google Search Console add the site (URL prefix), choose **HTML tag**, put the
+   token in the `GOOGLE_SITE_VERIFICATION` env variable, redeploy, verify, then
+   submit `/sitemap.xml`.
+3. Create a Google Business Profile for AfterByte in Mangaluru with the same name,
+   phone and website, and ask happy clients for reviews there.
+
 ## Editing content
 
 All content lives in `src/content/`:
