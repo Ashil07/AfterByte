@@ -18,7 +18,7 @@ export const services: Service[] = [
     title: "Web Design & Development",
     tagline: "Make your first impression count.",
     summary:
-      "Most customers meet you on a screen first. We build sites that explain what you do in seconds, work on every phone, and make the next step — call, book, order — obvious.",
+      "A website that explains what you do in seconds, works on every phone, and gets people to call, book or order.",
     capabilities: [
       "Business and portfolio websites",
       "Landing pages",
@@ -33,7 +33,7 @@ export const services: Service[] = [
     title: "App Development",
     tagline: "Put your idea in people’s hands.",
     summary:
-      "From rough sketch to an app people can install. We start with the screens that matter most, test them early, and build a foundation that grows with you.",
+      "We turn your idea into an app people can install, starting with the screens that matter most.",
     capabilities: [
       "Mobile applications",
       "Progressive Web Apps",
@@ -48,7 +48,7 @@ export const services: Service[] = [
     title: "Business Systems",
     tagline: "Less manual work. More clarity.",
     summary:
-      "Stock in one spreadsheet, bookings in another, invoices in a notebook. We replace the patchwork with one system your whole team can use.",
+      "One simple system for stock, bookings and billing, instead of scattered spreadsheets and notebooks.",
     capabilities: [
       "Inventory management",
       "Billing & invoicing",
@@ -63,7 +63,7 @@ export const services: Service[] = [
     title: "AI & Automation",
     tagline: "Give your time back.",
     summary:
-      "Reminders, data entry, follow-ups: work that has to happen but doesn’t need you. We connect your tools so it runs on its own, and add AI where it genuinely helps.",
+      "Reminders, data entry and follow-ups that run on their own, with AI only where it genuinely helps.",
     capabilities: [
       "Workflow & process automation",
       "Email & notification automation",
