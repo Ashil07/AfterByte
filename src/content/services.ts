@@ -4,6 +4,8 @@ export type Service = {
   id: ServiceId;
   number: string;
   title: string;
+  /** One-word name for the phone deck's tabs. */
+  short: string;
   /** Short serif line shown large. */
   tagline: string;
   summary: string;
@@ -16,6 +18,7 @@ export const services: Service[] = [
     id: "web",
     number: "01",
     title: "Web Design & Development",
+    short: "Websites",
     tagline: "Make your first impression count.",
     summary:
       "A website that explains what you do in seconds, works on every phone, and gets people to call, book or order.",
@@ -31,6 +34,7 @@ export const services: Service[] = [
     id: "app",
     number: "02",
     title: "App Development",
+    short: "Apps",
     tagline: "Put your idea in people’s hands.",
     summary:
       "We turn your idea into an app people can install, starting with the screens that matter most.",
@@ -46,6 +50,7 @@ export const services: Service[] = [
     id: "systems",
     number: "03",
     title: "Business Systems",
+    short: "Systems",
     tagline: "Less manual work. More clarity.",
     summary:
       "One simple system for stock, bookings and billing, instead of scattered spreadsheets and notebooks.",
@@ -61,6 +66,7 @@ export const services: Service[] = [
     id: "automation",
     number: "04",
     title: "AI & Automation",
+    short: "Automation",
     tagline: "Give your time back.",
     summary:
       "Reminders, data entry and follow-ups that run on their own, with AI only where it genuinely helps.",

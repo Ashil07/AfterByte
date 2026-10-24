@@ -11,6 +11,7 @@ import { AppDemo, assembleApp } from "./demos/AppDemo";
 import { AutomationFlow, assembleFlow } from "./demos/AutomationFlow";
 import { SystemsDemo, assembleSystems } from "./demos/SystemsDemo";
 import { WebDemo, assembleWeb } from "./demos/WebDemo";
+import { ServiceDeck } from "./ServiceDeck";
 
 const demos: Record<Exclude<ServiceId, "automation">, { View: () => ReactNode; assemble: (el: Element) => gsap.core.Timeline }> = {
   web: { View: WebDemo, assemble: assembleWeb },
@@ -50,8 +51,8 @@ function ServiceText({ service }: { service: Service }) {
 /**
  * 05 — What we build. Desktop: service copy scrolls on the left while a sticky
  * panel on the right shows the matching demo, assembled by scroll progress.
- * Automation follows as a full-width flow. Mobile: each demo sits under its
- * copy and assembles once on entry. Reduced motion: demos in final state.
+ * Automation follows as a full-width flow. Below lg the four services become a
+ * swipeable deck (ServiceDeck). Reduced motion: demos in final state.
  */
 export function Services() {
   const root = useRef<HTMLElement>(null);
@@ -107,17 +108,6 @@ export function Services() {
         });
       });
 
-      mm.add(MOTION.mobile, () => {
-        q<HTMLElement>("[data-inline-demo]").forEach((demoEl) => {
-          const id = demoEl.dataset.inlineDemo as keyof typeof demos;
-          const tl = prime(demos[id].assemble(demoEl));
-          ScrollTrigger.create({ trigger: demoEl, start: "top 75%", once: true, onEnter: () => tl.play() });
-        });
-        const flowEl = q("[data-flow]")[0];
-        const flow = prime(assembleFlow(flowEl));
-        ScrollTrigger.create({ trigger: flowEl, start: "top 70%", once: true, onEnter: () => flow.duration(3.2).play() });
-      });
-
       return () => mm.revert();
     },
     { scope: root },
@@ -131,7 +121,7 @@ export function Services() {
         <div className="grid-12">
           {/* Bottom padding keeps the sticky panel in place while the last block is read. */}
           <div className="col-span-12 lg:col-span-5 lg:pb-[18vh]">
-            <div className="mb-16 md:mb-24 lg:mb-0">
+            <div className="mb-10 md:mb-14 lg:mb-0">
               <ChapterMark id="services" />
               <RevealText id="services-title" className="display-l mt-8 max-w-[13ch] md:mt-10">
                 Four ways to get <em className="italic">there.</em>
@@ -142,12 +132,9 @@ export function Services() {
                 key={s.id}
                 data-service-block={s.id}
                 aria-labelledby={`svc-${s.id}`}
-                className="flex flex-col gap-10 border-t border-line py-14 lg:min-h-[88vh] lg:justify-center lg:border-0 lg:py-20"
+                className="hidden min-h-[88vh] flex-col justify-center py-20 lg:flex"
               >
                 <ServiceText service={s} />
-                <div data-inline-demo={s.id} className="lg:hidden">
-                  <DemoView id={s.id as keyof typeof demos} />
-                </div>
               </article>
             ))}
           </div>
@@ -166,8 +153,10 @@ export function Services() {
           </div>
         </div>
 
+        <ServiceDeck />
+
         {/* 04: full-width automation flow */}
-        <article aria-labelledby={`svc-${automation.id}`} className="mt-10 border-t border-line pt-14 md:mt-16 lg:pt-24">
+        <article aria-labelledby={`svc-${automation.id}`} className="mt-16 hidden border-t border-line pt-24 lg:block">
           <div className="grid-12 gap-y-8">
             <div className="label col-span-12 flex items-center gap-3 self-start text-mute lg:col-span-3">
               <span className="text-ice">{automation.number}</span>

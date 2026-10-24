@@ -2,7 +2,19 @@ import { Fragment, type ReactNode } from "react";
 import { gsap } from "@/components/motion/gsap";
 import { cn } from "@/lib/cn";
 
-function Node({ step, kind, title, children }: { step: string; kind: string; title: string; children: ReactNode }) {
+function Node({
+  step,
+  kind,
+  title,
+  compact,
+  children,
+}: {
+  step: string;
+  kind: string;
+  title: string;
+  compact?: boolean;
+  children: ReactNode;
+}) {
   return (
     <li data-node className="flex min-w-0 flex-col border border-line bg-ink-2 transition-colors">
       <div className="flex items-center justify-between border-b border-line px-4 py-3">
@@ -14,9 +26,9 @@ function Node({ step, kind, title, children }: { step: string; kind: string; tit
         </span>
         <span data-node-dot className="size-1.5 rounded-full bg-line-strong" />
       </div>
-      <div className="p-4">
+      <div className={cn("p-4", compact && "py-3")}>
         <p className="font-serif text-[1.5rem] leading-none">{title}</p>
-        <div aria-hidden className="mt-4 text-[0.8125rem] leading-snug">
+        <div aria-hidden className={cn("mt-4 text-[0.8125rem] leading-snug", compact && "hidden")}>
           {children}
         </div>
       </div>
@@ -24,10 +36,10 @@ function Node({ step, kind, title, children }: { step: string; kind: string; tit
   );
 }
 
-function Connector() {
+function Connector({ compact }: { compact?: boolean }) {
   return (
     <li aria-hidden className="flex items-center justify-center py-1 lg:px-1 lg:py-0">
-      <span className="relative block h-8 w-px bg-line lg:h-px lg:w-10 xl:w-14">
+      <span className={cn("relative block w-px bg-line lg:h-px lg:w-10 xl:w-14", compact ? "h-4" : "h-8")}>
         <span data-conn className="absolute inset-0 origin-top bg-ice lg:origin-left" />
       </span>
     </li>
@@ -39,9 +51,10 @@ const slots = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30"];
 /**
  * Service demo 04 — an example workflow: new booking → confirmation email →
  * updated availability → organised record. Fictional data; the real steps
- * depend on the tools a business already uses.
+ * depend on the tools a business already uses. `compact` shows the four steps
+ * without their contents (the phone services deck).
  */
-export function AutomationFlow() {
+export function AutomationFlow({ compact = false }: { compact?: boolean }) {
   const nodes = [
     {
       kind: "Trigger",
@@ -126,10 +139,10 @@ export function AutomationFlow() {
       <ol className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr]">
         {nodes.map((n, i) => (
           <Fragment key={n.title}>
-            <Node step={String(i + 1).padStart(2, "0")} kind={n.kind} title={n.title}>
+            <Node step={String(i + 1).padStart(2, "0")} kind={n.kind} title={n.title} compact={compact}>
               {n.body}
             </Node>
-            {i < nodes.length - 1 && <Connector />}
+            {i < nodes.length - 1 && <Connector compact={compact} />}
           </Fragment>
         ))}
       </ol>
