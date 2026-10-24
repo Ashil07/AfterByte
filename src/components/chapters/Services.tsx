@@ -133,10 +133,6 @@ export function Services() {
               Four ways to get <em className="italic">there.</em>
             </RevealText>
           </div>
-          <p className="col-span-12 max-w-[40ch] self-end text-paper/70 md:col-span-6 lg:col-span-4 lg:col-start-9">
-            We start with the problem, not the technology. Website development, app development, business software
-            and automation — often combined.
-          </p>
         </div>
 
         {/* 01–03: copy + sticky demo panel */}

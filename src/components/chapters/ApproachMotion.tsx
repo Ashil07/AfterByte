@@ -17,12 +17,6 @@ export function ApproachMotion({ children, className }: { children: ReactNode; c
       if (!el) return;
       const mm = gsap.matchMedia();
       mm.add(MOTION.mobile, () => {
-        gsap.from("[data-approach-intro]", {
-          opacity: 0,
-          y: 16,
-          duration: 0.8,
-          scrollTrigger: { trigger: "[data-approach-intro]", start: "top 88%", once: true },
-        });
         gsap.utils.toArray<HTMLElement>("[data-principle]", el).forEach((item) => {
           gsap
             .timeline({ scrollTrigger: { trigger: item, start: "top 85%", once: true } })

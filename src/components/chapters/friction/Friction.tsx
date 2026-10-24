@@ -15,8 +15,9 @@ import { cleanFaces, messyFaces } from "./faces";
  * for a clean one, joined by a single line: one system. Finally the statement
  * hands over to “Where we come in”: what AfterByte does about it.
  *
- * Mobile / reduced motion / no JS: natural flow. Headline, the five problems as
- * cards, the statement, then “Where we come in”.
+ * Mobile: natural flow. Headline, the five problems as cards, then one short
+ * sentence that joins the statement and “Where we come in”. Desktop with
+ * reduced motion or no JS: the same flow with both full lines.
  */
 export function Friction() {
   const root = useRef<HTMLElement>(null);
@@ -130,12 +131,6 @@ export function Friction() {
             scrollTrigger: { trigger: card, start: "top 88%", once: true },
           });
         });
-        gsap.from(q("[data-statement]"), {
-          opacity: 0,
-          y: 24,
-          duration: 1,
-          scrollTrigger: { trigger: q("[data-statement]")[0], start: "top 85%", once: true },
-        });
         gsap.from(q("[data-where] > *"), {
           opacity: 0,
           y: 24,
@@ -193,14 +188,20 @@ export function Friction() {
           })}
         </ol>
 
-        <p data-statement className="friction-statement display-m mt-20 max-w-[20ch] text-balance md:mt-28 lg:ml-[41.66%]">
+        <p data-statement className="friction-statement display-m hidden lg:block mt-20 max-w-[20ch] text-balance md:mt-28 lg:ml-[41.66%]">
           You don’t need more complexity. <em className="text-ice">You need a better system.</em>
         </p>
 
         <figure data-where className="friction-where grid-12 mt-20 gap-y-5 md:mt-28">
-          <figcaption className="label col-span-12 text-mute lg:col-span-2 lg:pt-4">Where we come in</figcaption>
+          <figcaption className="label col-span-12 hidden text-mute lg:col-span-2 lg:block lg:pt-4">Where we come in</figcaption>
           <p className="display-m col-span-12 max-w-[32ch] text-balance lg:col-span-10">
-            We design and build digital solutions around the way your business <em className="text-ice">actually works.</em>
+            <span className="hidden lg:block">
+              We design and build digital solutions around the way your business <em className="text-ice">actually works.</em>
+            </span>
+            {/* Phones get one sentence instead of the statement plus this line. */}
+            <span className="lg:hidden">
+              You need a better system, built around how your business <em className="text-ice">actually works.</em>
+            </span>
           </p>
         </figure>
       </div>
