@@ -24,7 +24,7 @@ It is a single-page, story-driven site (`/`) plus a contact API (`/api/contact`)
 ## 2. Interactive narrative
 
 The visitor is the protagonist, their business is the challenge, AfterByte is the
-guide. Sections are numbered chapters; the desktop header shows the current one.
+guide. Sections are numbered chapters; the desktop header shows the current one, so the in-section label (`ChapterMark`) is visible on phones and tablets only.
 
 **Currently hidden:** `work` and `team` are switched off (`enabled: false` in
 `src/content/chapters.ts`) until real projects and profiles are ready, and

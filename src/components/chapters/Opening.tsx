@@ -89,7 +89,7 @@ export function Opening() {
         className="frame relative grid h-full grid-rows-[auto_1fr_auto] pb-28 pt-[calc(var(--header-h)+1.25rem)] lg:pb-12"
       >
         <div className="flex items-start justify-between gap-6">
-          <div data-intro data-after className="lg:invisible">
+          <div data-intro data-after>
             <ChapterMark id="top" />
           </div>
         </div>
