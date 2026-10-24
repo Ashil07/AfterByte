@@ -1,28 +1,48 @@
-/** The narrative chapters, in page order. Ids are the section anchors. */
-export const chapters = [
-  { id: "top", number: "01", title: "Opening" },
-  { id: "vision", number: "02", title: "The vision" },
-  { id: "friction", number: "03", title: "Complications" },
-  { id: "turning-point", number: "04", title: "Turning point" },
-  { id: "services", number: "05", title: "What we build" },
-  { id: "work", number: "06", title: "Selected work" },
-  { id: "team", number: "07", title: "The team" },
-  { id: "approach", number: "08", title: "Our approach" },
-  { id: "contact", number: "09", title: "Next chapter" },
+/**
+ * The narrative chapters, in page order. Ids are the section anchors.
+ *
+ * Set `enabled: false` to take a chapter off the page without deleting its
+ * component or content. Numbers are assigned to enabled chapters only, so the
+ * sequence never skips, and navigation links to hidden chapters disappear.
+ */
+const allChapters = [
+  { id: "top", title: "Opening", enabled: true },
+  { id: "vision", title: "The vision", enabled: true },
+  { id: "friction", title: "Complications", enabled: true },
+  { id: "turning-point", title: "Turning point", enabled: true },
+  { id: "services", title: "What we build", enabled: true },
+  // Hidden until real projects are ready — content lives in src/content/projects.ts.
+  { id: "work", title: "Selected work", enabled: false },
+  // Hidden until real team profiles are ready — content lives in src/content/team.ts.
+  { id: "team", title: "The team", enabled: false },
+  { id: "approach", title: "Our approach", enabled: true },
+  { id: "contact", title: "Next chapter", enabled: true },
 ] as const;
 
-export type ChapterId = (typeof chapters)[number]["id"];
+export type ChapterId = (typeof allChapters)[number]["id"];
+
+export const chapters = allChapters
+  .filter((c) => c.enabled)
+  .map((c, i) => ({ id: c.id as ChapterId, title: c.title, number: String(i + 1).padStart(2, "0") }));
+
+export function isChapterEnabled(id: ChapterId) {
+  return chapters.some((c) => c.id === id);
+}
 
 export function chapter(id: ChapterId) {
   const found = chapters.find((c) => c.id === id);
-  if (!found) throw new Error(`Unknown chapter: ${id}`);
+  if (!found) throw new Error(`Chapter "${id}" is not enabled`);
   return found;
 }
 
-/** Primary navigation. */
-export const navigation = [
-  { href: "#services", label: "Services" },
-  { href: "#work", label: "Work" },
-  { href: "#approach", label: "Approach" },
-  { href: "#team", label: "Team" },
-] as const;
+/** Primary navigation. Links to disabled chapters are dropped automatically. */
+export const navigation = (
+  [
+    { chapter: "services", label: "Services" },
+    { chapter: "work", label: "Work" },
+    { chapter: "approach", label: "Approach" },
+    { chapter: "team", label: "Team" },
+  ] as const
+)
+  .filter((n) => isChapterEnabled(n.chapter))
+  .map((n) => ({ href: `#${n.chapter}`, label: n.label }));

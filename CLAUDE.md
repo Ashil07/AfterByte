@@ -26,6 +26,13 @@ It is a single-page, story-driven site (`/`) plus a contact API (`/api/contact`)
 The visitor is the protagonist, their business is the challenge, AfterByte is the
 guide. Sections are numbered chapters; the desktop header shows the current one.
 
+**Currently hidden:** `work` and `team` are switched off (`enabled: false` in
+`src/content/chapters.ts`) until real projects and profiles are ready. Their
+components and content are intact. Chapter numbers are assigned to enabled chapters
+only, so the live page runs 01–07 (Approach = 06, Contact = 07), and navigation links
+to hidden chapters are dropped automatically. The numbers in the table below are the
+full nine-chapter sequence.
+
 | # | id | Story beat | What happens | Component |
 |---|----|-----------|--------------|-----------|
 | 01 | `top` | Possibility | Living version of the logo. Halftone light sweeps in from bottom-left, wordmark rises, headline lines unmask, CTAs follow. Pointer light on desktop. Scene recedes on scroll. | `chapters/Opening.tsx` |
@@ -35,7 +42,7 @@ guide. Sections are numbered chapters; the desktop header shows the current one.
 | 05 | `services` | Transformation | Desktop: copy scrolls left, sticky panel right shows the matching demo assembled by scroll progress (website wireframe → site; app skeleton → screen; loose records → dashboard). Automation follows as a full-width four-step flow. | `chapters/Services.tsx`, `chapters/demos/*` |
 | 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. | `chapters/Work.tsx` |
 | 07 | `team` | Connection | Staggered portraits from content data. | `chapters/Team.tsx` |
-| 08 | `approach` | Connection | Quiet: CSS-sticky statement + six principles. No scroll animation by design. | `chapters/Approach.tsx` |
+| 08 | `approach` | Connection | Quiet: CSS-sticky statement + six principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). No scroll animation by design. | `chapters/Approach.tsx` |
 | 09 | `contact` | Action | Closing halftone mirrors the opening and brightens on arrival; process steps; form. Footer carries the large wordmark as a bookend. | `chapters/contact/*`, `layout/SiteFooter.tsx` |
 
 The story must read correctly with all animation disabled (verified with
@@ -57,7 +64,7 @@ halftone dots in diagonal light bands.
 | Token | Value | Use |
 |---|---|---|
 | `ink` | `#08090B` | page background |
-| `ink-2` | `#111318` | secondary surfaces (Services, Approach, demo panels) |
+| `ink-2` | `#111318` | secondary surfaces (Services, demo panels, fragment cards) |
 | `ink-3` | `#181B21` | chat bubbles and small raised details |
 | `paper` | `#F5F5F2` | primary text, primary button |
 | `mute` | `#92949D` | secondary text (≈6.8:1 on ink) |
@@ -176,6 +183,9 @@ projects, team, services or problems.
 
 ## 7. Content management
 
+- **Showing / hiding chapters:** set `enabled` in `src/content/chapters.ts`. To bring
+  back Selected Work or the Team, flip `work` / `team` to `true` — `page.tsx`, the
+  numbering, header indicator, mobile menu and nav all follow.
 - **Projects:** edit `src/content/projects.ts`. Add images to `public/work/` (≈1600px
   wide, webp/jpg). Remove `placeholder: true` once every field is real. `outcome` only
   if client-verified. Order in the array = order on the page; layouts rotate every 3.

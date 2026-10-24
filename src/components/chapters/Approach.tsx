@@ -8,7 +8,7 @@ import { principles } from "@/content/approach";
  */
 export function Approach() {
   return (
-    <section id="approach" aria-labelledby="approach-title" className="relative border-t border-line bg-ink-2 pb-28 pt-24 md:pb-40 md:pt-36">
+    <section id="approach" aria-labelledby="approach-title" className="relative border-t border-line bg-ink pb-28 pt-24 md:pb-40 md:pt-36">
       <div aria-hidden className="dot-texture pointer-events-none absolute inset-0 opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent_70%)]" />
       <div className="frame relative grid-12 gap-y-16">
         <div className="col-span-12 lg:col-span-5">
