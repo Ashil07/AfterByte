@@ -18,7 +18,7 @@ export const services: Service[] = [
     title: "Web Design & Development",
     tagline: "Make your first impression count.",
     summary:
-      "Most customers meet your business on a screen before they meet you. We design and build sites that explain what you do in seconds, look right on every phone, and make the next step — a call, a booking, an order — obvious.",
+      "Most customers meet you on a screen first. We build sites that explain what you do in seconds, work on every phone, and make the next step — call, book, order — obvious.",
     capabilities: [
       "Business and portfolio websites",
       "Landing pages",
@@ -33,7 +33,7 @@ export const services: Service[] = [
     title: "App Development",
     tagline: "Put your idea in people’s hands.",
     summary:
-      "We take an app from rough sketch to something people can install and use. We start with the few screens that matter most, test them early, and build on a foundation that can grow with you.",
+      "From rough sketch to an app people can install. We start with the screens that matter most, test them early, and build a foundation that grows with you.",
     capabilities: [
       "Mobile applications",
       "Progressive Web Apps",
@@ -48,14 +48,12 @@ export const services: Service[] = [
     title: "Business Systems",
     tagline: "Less manual work. More clarity.",
     summary:
-      "Inventory in one spreadsheet, bookings in another, invoices in a notebook. We replace the patchwork with one system built around how your team already works, so the numbers are current and everyone sees the same thing.",
+      "Stock in one spreadsheet, bookings in another, invoices in a notebook. We replace the patchwork with one system your whole team can use.",
     capabilities: [
       "Inventory management",
-      "Billing and invoicing",
-      "Rental management",
-      "Booking systems",
-      "Dashboards and internal tools",
-      "Custom business management software",
+      "Billing & invoicing",
+      "Booking & rental systems",
+      "Dashboards & internal tools",
     ],
     cta: "Map out a system",
   },
@@ -65,13 +63,11 @@ export const services: Service[] = [
     title: "AI & Automation",
     tagline: "Give your time back.",
     summary:
-      "Confirmations, reminders, data entry, follow-ups: the work that has to happen but doesn’t need you. We connect your tools so routine steps run on their own, and add AI where it genuinely helps — answering common questions, sorting requests, drafting replies.",
+      "Reminders, data entry, follow-ups: work that has to happen but doesn’t need you. We connect your tools so it runs on its own, and add AI where it genuinely helps.",
     capabilities: [
-      "Workflow automation",
-      "Business process automation",
-      "Email and notification automation",
-      "AI-powered applications",
-      "Chatbots",
+      "Workflow & process automation",
+      "Email & notification automation",
+      "AI tools & chatbots",
       "API integrations",
     ],
     cta: "Automate a workflow",

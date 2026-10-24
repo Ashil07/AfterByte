@@ -130,12 +130,12 @@ export function Services() {
           <div className="col-span-12 lg:col-span-7">
             <ChapterMark id="services" />
             <RevealText id="services-title" className="display-l mt-8 max-w-[13ch] md:mt-10">
-              Four ways to make it <em className="italic">real.</em>
+              Four ways to get <em className="italic">there.</em>
             </RevealText>
           </div>
           <p className="col-span-12 max-w-[40ch] self-end text-paper/70 md:col-span-6 lg:col-span-4 lg:col-start-9">
-            Every project starts with the problem, not the technology. These are the four kinds of work we do most —
-            often in combination.
+            We start with the problem, not the technology. Website development, app development, business software
+            and automation — often combined.
           </p>
         </div>
 

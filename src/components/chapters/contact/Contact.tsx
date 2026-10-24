@@ -11,9 +11,9 @@ import { site } from "@/content/site";
 import { ContactForm } from "./ContactForm";
 
 const steps = [
-  "We read your message and reply by email.",
-  "We talk through what you need and what can wait.",
-  "You get a clear scope and price before any work starts.",
+  "We read it and reply by email.",
+  "We talk through what you need.",
+  "You get a clear scope and price before work starts.",
 ];
 
 /**
@@ -83,8 +83,11 @@ export function Contact() {
                 </li>
               ))}
             </ol>
+            <p className="mt-8 text-paper/70">
+              Based in {site.location.city} ({site.location.cityAlt}), {site.location.region}, {site.location.countryName}.
+            </p>
             {site.phone.tel && (
-              <p className="mt-8 text-paper/70">
+              <p className="mt-2 text-paper/70">
                 Prefer to talk?{" "}
                 <a
                   href={`tel:${site.phone.tel}`}

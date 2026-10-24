@@ -144,7 +144,7 @@ export function ContactForm() {
         <p className="label text-ice">Message sent</p>
         <p className="mt-4 font-serif text-[clamp(2rem,3.4vw,3rem)] leading-[1.02]">Thank you, {values.name.split(" ")[0]}.</p>
         <p className="mt-4 max-w-[44ch] text-paper/70">
-          Your project details reached us. We’ll read them properly and reply to {values.email}.
+          Your message reached us. We’ll reply to {values.email}.
         </p>
         <Button
           variant="text"
@@ -295,9 +295,6 @@ export function ContactForm() {
         <Button type="submit" disabled={submitting} arrow={submitting ? "none" : "right"} aria-disabled={submitting}>
           {submitting ? "Sending…" : "Send project details"}
         </Button>
-        <p className="max-w-[34ch] text-[0.8125rem] text-mute">
-          Name, email, service and project details are required. Everything else is up to you.
-        </p>
       </div>
 
       <div id="form-status" ref={statusRef} tabIndex={-1} role="alert" aria-live="assertive" className="outline-none">

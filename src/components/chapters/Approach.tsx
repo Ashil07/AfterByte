@@ -20,9 +20,7 @@ export function Approach() {
               Great digital solutions should be within <em className="italic">reach.</em>
             </RevealText>
             <p data-approach-intro className="mt-8 max-w-[42ch] text-paper/70">
-              Affordable shouldn’t mean cutting corners. It means not paying for what you don’t need. We scope
-              each project around the outcome you’re after, agree the price before work begins, and then build it
-              properly.
+              Affordable shouldn’t mean cutting corners. Here’s how we keep good work within reach.
             </p>
           </div>
         </div>

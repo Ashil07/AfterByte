@@ -11,15 +11,15 @@ import { problems } from "@/content/problems";
 const parts = [
   {
     title: "A website that does its job",
-    body: "Customers find you, understand what you offer, and can book, buy or get in touch without sending a message first.",
+    body: "Customers find you, understand you, and book, buy or call — no back-and-forth.",
   },
   {
     title: "Software shaped around your work",
-    body: "Stock, bookings, billing and records live in one place, updated as things happen and visible to whoever needs them.",
+    body: "Stock, bookings, billing and records together, always up to date.",
   },
   {
     title: "Automation for the repetitive parts",
-    body: "Confirmations, reminders, invoices and follow-ups go out on their own, so your time goes to the work only you can do.",
+    body: "Confirmations and invoices go out on their own, so your time goes to real work.",
   },
 ];
 
@@ -111,8 +111,7 @@ export function TurningPoint() {
               We design and build digital solutions around the way your business <em className="text-ice">actually works.</em>
             </p>
             <p className="mt-8 max-w-[52ch] text-paper/70">
-              AfterByte is a design and development studio for businesses that want technology to make their work
-              simpler, not more complicated. We listen first, scope honestly, and build only what moves you forward.
+              We listen first, scope honestly, and build only what moves you forward.
             </p>
           </blockquote>
         </figure>

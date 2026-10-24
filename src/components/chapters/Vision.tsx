@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 
 type PossibilityId = (typeof possibilities)[number]["id"];
 const numerals = ["i", "ii", "iii"];
-const neutral = "Wherever you’re starting from, the first step is the same: understand what you need, then build exactly that.";
+const neutral = "Wherever you start, we begin the same way: understand what you need, then build exactly that.";
 
 /**
  * 02 — The vision. The second line inks in with scroll. Three starting points

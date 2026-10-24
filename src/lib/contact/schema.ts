@@ -5,10 +5,10 @@ export const serviceValues = ["web", "app", "systems", "automation", "unsure"] a
 
 export const budgetOptions = [
   { value: "", label: "Prefer not to say" },
-  { value: "focused", label: "Focused — a small, well-defined first version" },
-  { value: "complete", label: "Complete — a full website, app or system" },
-  { value: "phased", label: "Phased — larger, built in stages" },
-  { value: "unsure", label: "Not sure yet — help me figure it out" },
+  { value: "focused", label: "Small first version" },
+  { value: "complete", label: "Full website, app or system" },
+  { value: "phased", label: "Larger, built in stages" },
+  { value: "unsure", label: "Not sure yet" },
 ] as const;
 
 const budgetValues = budgetOptions.map((b) => b.value) as [string, ...string[]];

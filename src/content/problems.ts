@@ -14,31 +14,31 @@ export type Problem = {
 export const problems: Problem[] = [
   {
     id: "visibility",
-    problem: "Customers struggle to find your business online.",
+    problem: "Customers can’t find you online.",
     solution: "Found, understood, booked.",
     chaos: { x: 6, y: -8, r: -5 },
   },
   {
     id: "bookings",
-    problem: "Bookings and payments are scattered across messages.",
+    problem: "Bookings and payments are lost in chats.",
     solution: "Every booking in one place.",
     chaos: { x: 38, y: -42, r: 4 },
   },
   {
     id: "stock",
-    problem: "Stock and daily operations rely on spreadsheets.",
+    problem: "Stock and daily work live in spreadsheets.",
     solution: "Stock you can trust.",
     chaos: { x: -14, y: -10, r: -3 },
   },
   {
     id: "repetition",
-    problem: "Repetitive tasks consume valuable time.",
+    problem: "Repetitive tasks eat up your day.",
     solution: "Routine work, handled.",
     chaos: { x: 16, y: -20, r: 6 },
   },
   {
     id: "direction",
-    problem: "A promising idea has no clear digital direction yet.",
+    problem: "A good idea with no clear next step.",
     solution: "A clear first version.",
     chaos: { x: -38, y: -50, r: -6 },
   },

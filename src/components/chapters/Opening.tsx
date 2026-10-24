@@ -7,6 +7,7 @@ import { MOTION, SplitText, gsap, useGSAP } from "@/components/motion/gsap";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ButtonLink } from "@/components/ui/Button";
 import { ChapterMark } from "@/components/ui/ChapterMark";
+import { site } from "@/content/site";
 
 /**
  * 01 — Opening. A living version of the logo artwork: halftone light sweeps in
@@ -72,13 +73,9 @@ export function Opening() {
         className="frame relative grid h-full grid-rows-[auto_1fr_auto] pb-28 pt-[calc(var(--header-h)+1.25rem)] lg:pb-12"
       >
         <div className="flex items-start justify-between gap-6">
-          <div data-intro data-after>
+          <div data-intro data-after className="lg:invisible">
             <ChapterMark id="top" />
           </div>
-          <p data-intro data-after className="label hidden text-right text-mute md:block">
-            Websites <span className="text-line-strong">/</span> Apps <span className="text-line-strong">/</span>{" "}
-            Business systems <span className="text-line-strong">/</span> Automation
-          </p>
         </div>
 
         <div className="flex items-center justify-center">
@@ -105,6 +102,9 @@ export function Opening() {
             Every big thing starts <em className="italic">somewhere.</em>
           </h1>
           <div className="col-span-12 md:col-span-4 lg:col-span-4 lg:col-start-9">
+            <p data-intro data-after className="label mb-4 text-paper/80">
+              Website &amp; app development · {site.location.city}
+            </p>
             <p data-intro data-after className="max-w-[34ch] text-[1.0625rem] text-paper/75">
               An idea. A business. A problem waiting for a better solution.
             </p>
