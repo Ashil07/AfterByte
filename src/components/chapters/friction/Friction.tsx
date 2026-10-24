@@ -9,13 +9,14 @@ import { cleanFaces, messyFaces } from "./faces";
 /**
  * 03 — Complications. The main storytelling moment.
  *
- * Desktop with motion: the stage pins for ~2.6 viewports. Fragments pile up one
+ * Desktop with motion: the stage pins for ~3.4 viewports. Fragments pile up one
  * by one in disarray (accumulation), the headline gives way to the statement,
  * then every fragment straightens into an aligned row and swaps its messy face
- * for a clean one, joined by a single line: one system.
+ * for a clean one, joined by a single line: one system. Finally the statement
+ * hands over to “Where we come in”: what AfterByte does about it.
  *
  * Mobile / reduced motion / no JS: natural flow. Headline, the five problems as
- * cards, then the statement. Clean versions appear in chapter 04.
+ * cards, the statement, then “Where we come in”.
  */
 export function Friction() {
   const root = useRef<HTMLElement>(null);
@@ -32,7 +33,18 @@ export function Friction() {
         const stage = q<HTMLElement>("[data-stage]")[0];
         const grid = q<HTMLElement>("[data-fragments]")[0];
         const cards = q<HTMLElement>("[data-card]");
+        const where = q<HTMLElement>("[data-where]")[0];
         const chaos = problems.map((p) => p.chaos);
+        // “Where we come in” takes the statement’s place while pinned. Set inline
+        // so the placement travels with this script and is undone on revert.
+        Object.assign(where.style, {
+          gridRow: "2",
+          gridColumn: "1",
+          alignSelf: "start",
+          marginTop: "clamp(1.5rem, 4vh, 2.5rem)",
+          position: "relative",
+          zIndex: "2",
+        });
         /** Free height above the card row, so lifted cards never leave the stage on short screens. */
         const lift = () =>
           grid.getBoundingClientRect().top -
@@ -44,7 +56,7 @@ export function Friction() {
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: () => `+=${window.innerHeight * 2.8}`,
+            end: () => `+=${window.innerHeight * 3.4}`,
             pin: stage,
             scrub: 0.8,
             invalidateOnRefresh: true,
@@ -56,6 +68,7 @@ export function Friction() {
         gsap.set(q("[data-solution]"), { opacity: 0, y: 8 });
         gsap.set(q("[data-statement]"), { opacity: 0, y: 40 });
         gsap.set(q("[data-system-line]"), { scaleX: 0 });
+        gsap.set(q("[data-where] > *"), { opacity: 0, y: 30 });
 
         // 1. Accumulation — each fragment lands somewhere it doesn’t belong.
         cards.forEach((card, i) => {
@@ -93,11 +106,17 @@ export function Friction() {
           // Each caption is gone before its replacement starts, so the two never stack.
           .to(q("[data-problem]"), { opacity: 0, y: -8, duration: 0.45, stagger: 0.12 }, 7.1)
           .to(q("[data-solution]"), { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 }, 7.6)
-          .to(q("[data-system-line]"), { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 8.6)
+          .to(q("[data-system-line]"), { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 8.6);
+
+        // 4. Where we come in — the statement steps aside for what we do about
+        //    it. It is fully gone before the new line rises into the same place.
+        tl.to(q("[data-statement]"), { opacity: 0, y: -30, duration: 0.9, ease: "power2.in" }, 10.2)
+          .to(q("[data-where] > *"), { opacity: 1, y: 0, duration: 1.2, stagger: 0.15 }, 11.0)
           .to({}, { duration: 0.8 }); // brief hold before release
 
         return () => {
           delete el.dataset.pinned;
+          where.style.cssText = "";
         };
       });
 
@@ -116,6 +135,13 @@ export function Friction() {
           y: 24,
           duration: 1,
           scrollTrigger: { trigger: q("[data-statement]")[0], start: "top 85%", once: true },
+        });
+        gsap.from(q("[data-where] > *"), {
+          opacity: 0,
+          y: 24,
+          duration: 1,
+          stagger: 0.15,
+          scrollTrigger: { trigger: q("[data-where]")[0], start: "top 85%", once: true },
         });
       });
 
@@ -170,6 +196,13 @@ export function Friction() {
         <p data-statement className="friction-statement display-m mt-20 max-w-[20ch] text-balance md:mt-28 lg:ml-[41.66%]">
           You don’t need more complexity. <em className="text-ice">You need a better system.</em>
         </p>
+
+        <figure data-where className="friction-where grid-12 mt-20 gap-y-5 md:mt-28">
+          <figcaption className="label col-span-12 text-mute lg:col-span-2 lg:pt-4">Where we come in</figcaption>
+          <p className="display-m col-span-12 max-w-[32ch] text-balance lg:col-span-10">
+            We design and build digital solutions around the way your business <em className="text-ice">actually works.</em>
+          </p>
+        </figure>
       </div>
     </section>
   );

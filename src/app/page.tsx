@@ -11,7 +11,7 @@ import { isChapterEnabled } from "@/content/chapters";
 
 /**
  * The story, in order. See CLAUDE.md §2 for what each chapter is for.
- * Work and Team render only when enabled in src/content/chapters.ts.
+ * Turning point, Work and Team render only when enabled in src/content/chapters.ts.
  */
 export default function Home() {
   return (
@@ -19,7 +19,7 @@ export default function Home() {
       <Opening />
       <Vision />
       <Friction />
-      <TurningPoint />
+      {isChapterEnabled("turning-point") && <TurningPoint />}
       <Services />
       {isChapterEnabled("work") && <Work />}
       {isChapterEnabled("team") && <Team />}

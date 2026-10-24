@@ -27,9 +27,11 @@ The visitor is the protagonist, their business is the challenge, AfterByte is th
 guide. Sections are numbered chapters; the desktop header shows the current one.
 
 **Currently hidden:** `work` and `team` are switched off (`enabled: false` in
-`src/content/chapters.ts`) until real projects and profiles are ready. Their
-components and content are intact. Chapter numbers are assigned to enabled chapters
-only, so the live page runs 01–07 (Approach = 06, Contact = 07), and navigation links
+`src/content/chapters.ts`) until real projects and profiles are ready, and
+`turning-point` is switched off because its closing line (“Where we come in”) now
+ends chapter 03. Their components and content are intact. Chapter numbers are
+assigned to enabled chapters only, so the live page runs 01–06 (Services = 04,
+Approach = 05, Contact = 06), and navigation links
 to hidden chapters are dropped automatically. The numbers in the table below are the
 full nine-chapter sequence.
 
@@ -37,8 +39,8 @@ full nine-chapter sequence.
 |---|----|-----------|--------------|-----------|
 | 01 | `top` | Possibility | Living version of the logo. Halftone light sweeps in from bottom-left, wordmark rises, headline lines unmask, CTAs follow. Pointer light on desktop. Scene recedes on scroll. | `chapters/Opening.tsx` |
 | 02 | `vision` | Possibility | “You’ve got the vision.” Second line inks in word by word (scrub). Three starting points reshape a halftone figure (seed / growth / order; desktop only — on mobile each choice expands inline). Optional. | `chapters/Vision.tsx` |
-| 03 | `friction` | Friction | **Main moment.** Desktop: pinned ~2.8 viewports. Five UI fragments (search, messages, spreadsheet, reminders, idea note) pile up in disarray with their problem captions; headline yields to “You don’t need more complexity. You need a better system.”; fragments straighten into a row, swap messy faces for clean ones, joined by a line. | `chapters/friction/*` |
-| 04 | `turning-point` | Discovery | “What if everything just worked?” Scattered halftone resolves into three bands aligned with three rows of copy (website / software / automation). AfterByte introduced. On mobile/reduced motion it also shows the clean fragments (`.system-fallback`). | `chapters/TurningPoint.tsx` |
+| 03 | `friction` | Friction | **Main moment.** Desktop: pinned ~3.4 viewports. Five UI fragments (search, messages, spreadsheet, reminders, idea note) pile up in disarray with their problem captions; headline yields to “You don’t need more complexity. You need a better system.”; fragments straighten into a row, swap messy faces for clean ones, joined by a line; the statement then fades up and out and “Where we come in — We design and build digital solutions around the way your business actually works.” rises into its place. Mobile/reduced motion: the same lines in natural flow after the cards. | `chapters/friction/*` |
+| 04 | `turning-point` | Discovery | **Hidden.** “What if everything just worked?” Scattered halftone resolves into three bands aligned with three rows of copy (website / software / automation). AfterByte introduced. On mobile/reduced motion it also shows the clean fragments (`.system-fallback`). | `chapters/TurningPoint.tsx` |
 | 05 | `services` | Transformation | Desktop: copy scrolls left, sticky panel right shows the matching demo assembled by scroll progress (website wireframe → site; app skeleton → screen; loose records → dashboard). Automation follows as a full-width four-step flow. | `chapters/Services.tsx`, `chapters/demos/*` |
 | 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. | `chapters/Work.tsx` |
 | 07 | `team` | Connection | Staggered portraits from content data. | `chapters/Team.tsx` |
@@ -57,7 +59,7 @@ halftone dots in diagonal light bands.
 - **Wordmark:** `public/brand/wordmark.png` (white on transparent, 1706×514), extracted
   from the artwork by `scripts/generate-assets.py`. Never substitute a font for it.
 - **Halftone grid** is the recurring motif: hero, Vision figure, scattered → ordered in
-  04, portfolio placeholders, closing. Rendered live by `components/halftone`.
+  04 (hidden), portfolio placeholders, closing. Rendered live by `components/halftone`.
 
 ### Colours — tokens in `src/app/globals.css` `@theme` (use as Tailwind classes)
 
@@ -142,7 +144,7 @@ projects, team, services or problems.
   motion, or after a revert, everything is visible. Demo timelines are “primed”
   (`tl.progress(1).progress(0)`) so start states render before playback.
 - Reveals run once (`once: true`). Scrubbed timelines only for: hero recede, Vision ink,
-  Friction pin, 04 halftone morph, service demos (desktop), automation flow (desktop),
+  Friction pin, 04 halftone morph (hidden), service demos (desktop), automation flow (desktop),
   closing illumination.
 - **Pinning:** only chapter 03, desktop only. It sets `data-pinned` on the section,
   which switches CSS to the pinned grid (see `globals.css`). Services uses CSS `sticky`.

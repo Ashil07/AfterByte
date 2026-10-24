@@ -9,7 +9,8 @@ const allChapters = [
   { id: "top", title: "Opening", enabled: true },
   { id: "vision", title: "The vision", enabled: true },
   { id: "friction", title: "Complications", enabled: true },
-  { id: "turning-point", title: "Turning point", enabled: true },
+  // Off: its closing line (“Where we come in”) now ends chapter 03 instead.
+  { id: "turning-point", title: "Turning point", enabled: false },
   { id: "services", title: "What we build", enabled: true },
   // Hidden until real projects are ready — content lives in src/content/projects.ts.
   { id: "work", title: "Selected work", enabled: false },
