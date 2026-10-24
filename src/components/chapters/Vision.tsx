@@ -112,7 +112,8 @@ export function Vision() {
             </ul>
           </div>
 
-          <figure className="col-span-12 sm:col-span-8 sm:col-start-3 lg:col-span-4 lg:col-start-9">
+          {/* Desktop only: on small screens the choices expand inline instead. */}
+          <figure className="hidden lg:col-span-4 lg:col-start-9 lg:block">
             <div className="relative aspect-[4/5] border border-line bg-ink-2/40">
               <Halftone shape={current?.shape ?? "seed"} spacing={10} seed={3} />
               <span aria-hidden className="label absolute left-4 top-4 text-mute">
