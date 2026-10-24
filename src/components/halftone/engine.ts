@@ -126,6 +126,12 @@ export class HalftoneEngine {
   /** Animate from whatever is on screen now to a new shape. */
   transitionTo(shape: FieldShape, duration = 0.8) {
     if (shape === this.toShape && this.state.mix >= 1) return;
+    // Not measured yet (e.g. hidden with display: none): resize() builds this shape later.
+    if (!this.from || !this.to) {
+      this.fromShape = this.toShape = shape;
+      this.state.mix = 1;
+      return;
+    }
     this.from = this.blended();
     this.fromShape = null;
     this.toShape = shape;
