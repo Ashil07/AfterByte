@@ -42,7 +42,7 @@ full nine-chapter sequence.
 | 05 | `services` | Transformation | Desktop: copy scrolls left, sticky panel right shows the matching demo assembled by scroll progress (website wireframe → site; app skeleton → screen; loose records → dashboard). Automation follows as a full-width four-step flow. | `chapters/Services.tsx`, `chapters/demos/*` |
 | 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. | `chapters/Work.tsx` |
 | 07 | `team` | Connection | Staggered portraits from content data. | `chapters/Team.tsx` |
-| 08 | `approach` | Connection | Quiet: CSS-sticky statement + six principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). No scroll animation by design. | `chapters/Approach.tsx` |
+| 08 | `approach` | Connection | Quiet: CSS-sticky statement + six principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). Still on desktop by design; on mobile the intro and each principle enter as reached (rule draws, numeral rises, copy follows). | `chapters/Approach.tsx`, `chapters/ApproachMotion.tsx` |
 | 09 | `contact` | Action | Closing halftone mirrors the opening and brightens on arrival; process steps; form. Footer carries the large wordmark as a bookend. | `chapters/contact/*`, `layout/SiteFooter.tsx` |
 
 The story must read correctly with all animation disabled (verified with
