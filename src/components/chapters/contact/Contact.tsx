@@ -106,15 +106,22 @@ export function Contact() {
               </p>
             )}
             {site.socials.length > 0 && (
-              <ul className="mt-6 flex flex-wrap gap-x-6">
-                {site.socials.map((s) => (
-                  <li key={s.href}>
-                    <a href={s.href} target="_blank" rel="me noopener" className="label inline-block py-3.5 text-paper/80 hover:text-ice">
+              <p className="mt-2 text-paper/70">
+                Follow us on:{" "}
+                {site.socials.map((s, i) => (
+                  <span key={s.href}>
+                    {i > 0 && ", "}
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="me noopener"
+                      className="inline-block py-2 text-paper underline decoration-line-strong underline-offset-4 hover:decoration-ice"
+                    >
                       {s.label} ↗
                     </a>
-                  </li>
+                  </span>
                 ))}
-              </ul>
+              </p>
             )}
           </aside>
           <div id="contact-form" className="col-span-12 scroll-mt-[calc(var(--header-h)+2rem)] lg:col-span-7 lg:col-start-6">
