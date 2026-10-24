@@ -2,12 +2,8 @@ export type Principle = { title: string; body: string };
 
 export const principles: Principle[] = [
   {
-    title: "Practical pricing",
-    body: "You pay for what your business needs, not for features you’ll never use.",
-  },
-  {
-    title: "Clearly scoped projects",
-    body: "Before we build, you get it in writing: what’s included, the timeline and the cost.",
+    title: "Clear, practical pricing",
+    body: "You pay only for what your business needs, with the scope, timeline and cost in writing before we start.",
   },
   {
     title: "Tailored solutions",
@@ -18,12 +14,8 @@ export const principles: Principle[] = [
     body: "You talk to the people doing the work and see progress as it happens.",
   },
   {
-    title: "Modern engineering",
-    body: "Current, well-supported tools, so what we build is fast and secure.",
-  },
-  {
-    title: "Maintainable software",
-    body: "Clean code and a proper handover, so it stays easy to change — by us or anyone else.",
+    title: "Built to last",
+    body: "Modern, well-supported tools and clean code, so it stays fast, secure and easy to change — by us or anyone else.",
   },
 ];
 

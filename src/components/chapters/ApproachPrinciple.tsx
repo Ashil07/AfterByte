@@ -10,7 +10,7 @@ const titleClass = "font-serif text-[clamp(1.6rem,2.4vw,2.125rem)] leading-[1.05
 /**
  * One principle in chapter 08. Desktop shows the explanation under the title;
  * below lg the title is a button and the explanation opens on tap, so the list
- * scans as six short headings.
+ * scans as four short headings.
  */
 export function ApproachPrinciple({ principle, index }: { principle: Principle; index: number }) {
   const [open, setOpen] = useState(false);

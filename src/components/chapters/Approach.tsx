@@ -5,7 +5,7 @@ import { ApproachMotion } from "./ApproachMotion";
 import { ApproachPrinciple } from "./ApproachPrinciple";
 
 /**
- * 08 — Our approach. Deliberately quiet: a sticky statement on the left, six
+ * 08 — Our approach. Deliberately quiet: a sticky statement on the left, four
  * principles on the right. Affordability is framed as precision, not discount.
  * On mobile the principles enter one by one (ApproachMotion) and each opens on
  * tap (ApproachPrinciple); desktop is still and fully open.
