@@ -109,7 +109,7 @@ export function Contact() {
               <ul className="mt-6 flex flex-wrap gap-x-6">
                 {site.socials.map((s) => (
                   <li key={s.href}>
-                    <a href={s.href} target="_blank" rel="me noopener" className="label inline-block py-2 text-paper/80 hover:text-ice">
+                    <a href={s.href} target="_blank" rel="me noopener" className="label inline-block py-3.5 text-paper/80 hover:text-ice">
                       {s.label} ↗
                     </a>
                   </li>
