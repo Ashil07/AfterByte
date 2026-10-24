@@ -7,7 +7,6 @@ const valid = {
   company: "",
   service: "systems",
   message: "We track rentals in a spreadsheet and keep double-booking equipment.",
-  budget: "",
 };
 
 describe("contactSchema", () => {
@@ -21,10 +20,9 @@ describe("contactSchema", () => {
     expect(r.email).toBe("asha@example.com");
   });
 
-  it("treats company and budget as optional", () => {
+  it("treats company as optional", () => {
     const r = contactSchema.parse({ name: valid.name, email: valid.email, service: valid.service, message: valid.message });
     expect(r.company).toBe("");
-    expect(r.budget).toBe("");
   });
 
   it("reports a readable message per invalid field", () => {
@@ -38,7 +36,8 @@ describe("contactSchema", () => {
     expect(errors.message).toMatch(/20 characters/);
   });
 
-  it("rejects unknown budget values", () => {
-    expect(contactSchema.safeParse({ ...valid, budget: "a million" }).success).toBe(false);
+  it("ignores fields the form no longer sends", () => {
+    const r = contactSchema.parse({ ...valid, budget: "a million" });
+    expect(r).not.toHaveProperty("budget");
   });
 });

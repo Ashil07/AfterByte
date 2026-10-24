@@ -30,8 +30,14 @@ export function Friction() {
       mm.add(MOTION.desktop, () => {
         el.dataset.pinned = "true";
         const stage = q<HTMLElement>("[data-stage]")[0];
+        const grid = q<HTMLElement>("[data-fragments]")[0];
         const cards = q<HTMLElement>("[data-card]");
         const chaos = problems.map((p) => p.chaos);
+        /** Free height above the card row, so lifted cards never leave the stage on short screens. */
+        const lift = () =>
+          grid.getBoundingClientRect().top -
+          stage.getBoundingClientRect().top -
+          parseFloat(getComputedStyle(stage).paddingTop);
 
         const tl = gsap.timeline({
           defaults: { ease: "power2.out" },
@@ -59,14 +65,14 @@ export function Friction() {
               opacity: 0,
               scale: 0.94,
               x: () => (chaos[i].x / 100) * stage.clientWidth + (i % 2 ? 24 : -24),
-              y: () => (chaos[i].y / 100) * stage.clientHeight + 30,
+              y: () => (chaos[i].y / 100) * lift() + 30,
               rotation: chaos[i].r * 1.4,
             },
             {
               opacity: 1,
               scale: 1,
               x: () => (chaos[i].x / 100) * stage.clientWidth,
-              y: () => (chaos[i].y / 100) * stage.clientHeight,
+              y: () => (chaos[i].y / 100) * lift(),
               rotation: chaos[i].r,
               duration: 1.2,
             },
@@ -74,16 +80,19 @@ export function Friction() {
           );
         });
 
-        // 2. The turn — the headline yields to the statement.
+        // 2. The turn — the headline leaves and the fragments straighten into
+        //    one aligned row. The statement only arrives once the top-right,
+        //    where the lifted fragments were, is clear again.
         tl.to(q("[data-head]"), { opacity: 0, y: -40, duration: 1, ease: "power2.in" }, 5.4)
-          .to(q("[data-statement]"), { opacity: 1, y: 0, duration: 1.2 }, 6.0);
+          .to(cards, { x: 0, y: 0, rotation: 0, duration: 2, ease: "power3.inOut", stagger: 0.12 }, 5.6)
+          .to(q("[data-statement]"), { opacity: 1, y: 0, duration: 1.2 }, 7.9);
 
-        // 3. Clarity — fragments straighten into one aligned system.
-        tl.to(cards, { x: 0, y: 0, rotation: 0, duration: 2, ease: "power3.inOut", stagger: 0.12 }, 6.2)
-          .to(q("[data-messy]"), { opacity: 0, duration: 0.8, stagger: 0.12 }, 7.3)
-          .to(q("[data-clean]"), { opacity: 1, duration: 0.8, stagger: 0.12 }, 7.3)
-          .to(q("[data-problem]"), { opacity: 0, y: -8, duration: 0.6, stagger: 0.12 }, 7.4)
-          .to(q("[data-solution]"), { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 }, 7.7)
+        // 3. Clarity — messy faces give way to clean ones, joined by a line.
+        tl.to(q("[data-messy]"), { opacity: 0, duration: 0.8, stagger: 0.12 }, 7.0)
+          .to(q("[data-clean]"), { opacity: 1, duration: 0.8, stagger: 0.12 }, 7.0)
+          // Each caption is gone before its replacement starts, so the two never stack.
+          .to(q("[data-problem]"), { opacity: 0, y: -8, duration: 0.45, stagger: 0.12 }, 7.1)
+          .to(q("[data-solution]"), { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 }, 7.6)
           .to(q("[data-system-line]"), { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 8.6)
           .to({}, { duration: 0.8 }); // brief hold before release
 

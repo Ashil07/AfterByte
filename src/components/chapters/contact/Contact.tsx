@@ -7,7 +7,6 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { RevealText } from "@/components/motion/RevealText";
 import { ButtonLink } from "@/components/ui/Button";
 import { ChapterMark } from "@/components/ui/ChapterMark";
-import { site } from "@/content/site";
 import { ContactForm } from "./ContactForm";
 
 const steps = [
@@ -83,49 +82,6 @@ export function Contact() {
                 </li>
               ))}
             </ol>
-            <p className="mt-8 text-paper/70">
-              Based in {site.location.city} ({site.location.cityAlt}), {site.location.region}, {site.location.countryName}.
-            </p>
-            {site.phone.tel && (
-              <p className="mt-2 text-paper/70">
-                Prefer to talk?{" "}
-                <a
-                  href={`tel:${site.phone.tel}`}
-                  className="inline-block py-2 text-paper underline decoration-line-strong underline-offset-4 hover:decoration-ice"
-                >
-                  {site.phone.display}
-                </a>
-              </p>
-            )}
-            {site.email && (
-              <p className="mt-2 text-paper/70">
-                Prefer email?{" "}
-                <a
-                  href={`mailto:${site.email}`}
-                  className="inline-block py-2 text-paper underline decoration-line-strong underline-offset-4 [overflow-wrap:anywhere] hover:decoration-ice"
-                >
-                  {site.email}
-                </a>
-              </p>
-            )}
-            {site.socials.length > 0 && (
-              <p className="mt-2 text-paper/70">
-                Follow us on:{" "}
-                {site.socials.map((s, i) => (
-                  <span key={s.href}>
-                    {i > 0 && ", "}
-                    <a
-                      href={s.href}
-                      target="_blank"
-                      rel="me noopener"
-                      className="inline-block py-2 text-paper underline decoration-line-strong underline-offset-4 hover:decoration-ice"
-                    >
-                      {s.label} ↗
-                    </a>
-                  </span>
-                ))}
-              </p>
-            )}
           </aside>
           <div id="contact-form" className="col-span-12 scroll-mt-[calc(var(--header-h)+2rem)] lg:col-span-7 lg:col-start-6">
             <h3 className="sr-only">Project inquiry form</h3>

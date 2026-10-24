@@ -1,6 +1,6 @@
 import "server-only";
 import { serviceOptions } from "@/content/services";
-import { budgetOptions, type ContactInput } from "./schema";
+import type { ContactInput } from "./schema";
 
 /**
  * Delivers contact submissions by email. Server-only: credentials are read
@@ -28,13 +28,11 @@ const escapeHtml = (s: string) =>
 
 export function compose(input: ContactInput) {
   const service = serviceOptions.find((s) => s.value === input.service)?.label ?? input.service;
-  const budget = budgetOptions.find((b) => b.value === input.budget)?.label ?? "Not given";
   const fields: [string, string][] = [
     ["Name", input.name],
     ["Email", input.email],
     ["Company", input.company || "—"],
     ["Service", service],
-    ["Budget", budget],
   ];
   const subject = oneLine(`New project inquiry — ${input.name} (${service})`);
   const text = `${fields.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\n${input.message}\n`;

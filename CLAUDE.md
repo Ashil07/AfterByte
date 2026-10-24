@@ -182,7 +182,9 @@ projects, team, services or problems.
   Reply-To is the visitor. Subject is single-line; HTML body is escaped.
 - Responses: 200 ok · 400 invalid/bad_request · 403 forbidden · 413 too large ·
   429 rate_limited · **503 not_configured** · 502 delivery_failed. Each maps to honest UI copy.
-- Budget options are descriptive tiers, not prices (`budgetOptions` in `schema.ts`).
+- Fields: name, email, company (optional), service, message. There is deliberately no
+  budget field. Phone, email, Instagram and location live in the footer's Contact
+  column, not beside the form.
 
 ## 7. Content management
 
@@ -211,7 +213,7 @@ projects, team, services or problems.
   `keywords`. `app/layout.tsx` turns these into metadata, `en-IN` locale, geo tags and
   JSON-LD (`ProfessionalService` with city-level address, areaServed, services, plus
   `WebSite`). The same location and service words appear in visible copy — hero label,
-  Services intro, Contact (“Based in …”) and the footer paragraph — because Google
+  Services intro, the footer paragraph and the footer Contact column (“Based in …”) — because Google
   ranks on what people can read. Keep them consistent with the Google Business
   Profile (same name, phone, city). Never add ratings, prices or a street address to
   structured data unless they are real and shown on the page. `GOOGLE_SITE_VERIFICATION`

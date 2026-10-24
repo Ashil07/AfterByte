@@ -7,7 +7,6 @@ import { site } from "@/content/site";
 import { SERVICE_EVENT } from "@/lib/contact/events";
 import {
   HONEYPOT,
-  budgetOptions,
   contactSchema,
   fieldErrors,
   type ContactField,
@@ -18,8 +17,8 @@ import { cn } from "@/lib/cn";
 type Values = Record<ContactField, string>;
 type Status = "idle" | "submitting" | "success" | "error";
 
-const empty: Values = { name: "", email: "", company: "", service: "", message: "", budget: "" };
-const order: ContactField[] = ["name", "email", "company", "service", "message", "budget"];
+const empty: Values = { name: "", email: "", company: "", service: "", message: "" };
+const order: ContactField[] = ["name", "email", "company", "service", "message"];
 
 const failureCopy: Record<string, string> = {
   not_configured: "The form isn’t connected to our inbox yet, so your message was not sent.",
@@ -253,36 +252,6 @@ export function ContactForm() {
             required
           />
         </Field>
-        <fieldset className="sm:col-span-2">
-          <legend className="label flex w-full justify-between text-mute">
-            <span>Budget range</span>
-            <span className="normal-case tracking-normal text-mute/70">Optional</span>
-          </legend>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {budgetOptions.map((b) => {
-              const on = values.budget === b.value;
-              return (
-                <label
-                  key={b.value || "none"}
-                  className={cn(
-                    "cursor-pointer border px-3 py-2.5 text-[0.875rem] transition-colors duration-300 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ice",
-                    on ? "border-ice/70 bg-ice/10 text-paper" : "border-line text-paper/70 hover:border-line-strong hover:text-paper",
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="budget"
-                    value={b.value}
-                    checked={on}
-                    onChange={() => update("budget", b.value)}
-                    className="sr-only"
-                  />
-                  {b.label}
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
       </div>
 
       {/* Honeypot: hidden from people and assistive tech. */}

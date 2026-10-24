@@ -7,7 +7,6 @@ const input = {
   company: "",
   service: "web" as const,
   message: "<script>alert(1)</script> We need a site.",
-  budget: "",
 };
 
 describe("provider", () => {

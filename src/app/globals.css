@@ -196,10 +196,10 @@ body {
   background: color-mix(in srgb, var(--color-ice) 55%, transparent);
   transform-origin: left center;
 }
-@media (max-height: 760px) {
-  .friction[data-pinned] .friction-head {
-    font-size: clamp(2.4rem, 5vw, 4.5rem);
-  }
+/* While pinned the headline shares one screen with the card row, so it also
+   scales with the viewport height and never reaches down into the cards. */
+.friction[data-pinned] .friction-head {
+  font-size: min(clamp(2.6rem, 6.4vw, 6.75rem), 8.2vh);
 }
 
 /* Chapter 05 sticky panel: only the active demo is visible. The outgoing demo

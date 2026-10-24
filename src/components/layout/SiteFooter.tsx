@@ -1,7 +1,17 @@
+import { Fragment } from "react";
 import { WordmarkHalftone } from "@/components/halftone/WordmarkHalftone";
-import { navigation } from "@/content/chapters";
 import { site } from "@/content/site";
 import { Year } from "./Year";
+
+/** Labels sit above their value on phones and beside it from `xs` up. */
+const term = "label mt-3 text-mute first:mt-0 xs:mt-0 xs:pt-0.5";
+const link = "inline-block py-2 text-paper/80 transition-colors hover:text-paper";
+
+/** "https://www.instagram.com/afterbyte.studio/" → "@afterbyte.studio" */
+const handle = (href: string) => {
+  const name = new URL(href).pathname.split("/").filter(Boolean)[0];
+  return name ? `@${name}` : href;
+};
 
 export function SiteFooter() {
   return (
@@ -18,53 +28,48 @@ export function SiteFooter() {
               and automations.
             </p>
           </div>
-          <nav aria-label="Footer" className="col-span-12 sm:col-span-4 lg:col-span-2 lg:col-start-7">
-            <p className="label mb-4 text-mute">Explore</p>
-            <ul>
-              {navigation.map((n) => (
-                <li key={n.href}>
-                  <a href={n.href} className="inline-block py-2 text-paper/80 transition-colors hover:text-paper">
-                    {n.label}
-                  </a>
-                </li>
-              ))}
-              <li>
-                <a href="#contact" className="inline-block py-2 text-paper/80 transition-colors hover:text-paper">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </nav>
           {/* Wide enough for the full email address at every breakpoint. */}
-          <div className="col-span-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
-            <p className="label mb-4 text-mute">Elsewhere</p>
-            {site.email || site.phone.tel || site.socials.length ? (
-              <ul>
-                {site.phone.tel && (
-                  <li>
-                    <a href={`tel:${site.phone.tel}`} className="inline-block py-2 text-paper/80 hover:text-paper">
+          <div className="col-span-12 sm:col-span-10 md:col-span-8 lg:col-span-5 lg:col-start-8">
+            <p className="label mb-4 text-mute">Contact</p>
+            <dl className="grid grid-cols-1 items-baseline gap-x-4 xs:grid-cols-[5.5rem_1fr]">
+              {site.phone.tel && (
+                <>
+                  <dt className={term}>Phone</dt>
+                  <dd>
+                    <a href={`tel:${site.phone.tel}`} className={link}>
                       {site.phone.display}
                     </a>
-                  </li>
-                )}
-                {site.email && (
-                  <li>
-                    <a href={`mailto:${site.email}`} className="inline-block py-2 text-paper/80 [overflow-wrap:anywhere] hover:text-paper">
+                  </dd>
+                </>
+              )}
+              {site.email && (
+                <>
+                  <dt className={term}>Email</dt>
+                  <dd className="min-w-0">
+                    <a href={`mailto:${site.email}`} className={`${link} [overflow-wrap:anywhere]`}>
                       {site.email}
                     </a>
-                  </li>
-                )}
-                {site.socials.map((s) => (
-                  <li key={s.href}>
-                    <a href={s.href} rel="me noopener" target="_blank" className="inline-block py-2 text-paper/80 hover:text-paper">
-                      {s.label}
+                  </dd>
+                </>
+              )}
+              {site.socials.map((s) => (
+                <Fragment key={s.href}>
+                  <dt className={term}>{s.label}</dt>
+                  <dd>
+                    <a href={s.href} rel="me noopener" target="_blank" className={link}>
+                      {handle(s.href)} ↗
                     </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-paper/60">The contact form is the best way to reach us.</p>
-            )}
+                  </dd>
+                </Fragment>
+              ))}
+              <dt className={term}>Based in</dt>
+              <dd className="py-2 text-paper/80">
+                {site.location.city}, {site.location.region}
+              </dd>
+            </dl>
+            <a href="#contact-form" className="label mt-4 inline-block py-3.5 text-ice transition-colors hover:text-paper">
+              Start a project →
+            </a>
           </div>
         </div>
 
