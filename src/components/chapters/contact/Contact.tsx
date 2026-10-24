@@ -99,7 +99,7 @@ export function Contact() {
                 Prefer email?{" "}
                 <a
                   href={`mailto:${site.email}`}
-                  className="inline-block py-2 text-paper underline decoration-line-strong underline-offset-4 hover:decoration-ice"
+                  className="inline-block py-2 text-paper underline decoration-line-strong underline-offset-4 [overflow-wrap:anywhere] hover:decoration-ice"
                 >
                   {site.email}
                 </a>

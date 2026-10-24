@@ -201,7 +201,8 @@ projects, team, services or problems.
   layout decision in `Services.tsx`.
 - **Contact details / socials:** `src/content/site.ts` (`email`, `phone` {display, tel},
   `socials`). Empty values are hidden everywhere (footer, contact, form failure
-  message, JSON-LD). Current: phone +91 98456 35981, Instagram @afterbyte.studio.
+  message, JSON-LD). Current: email afterbytestudio.business@gmail.com, phone
+  +91 98456 35981, Instagram @afterbyte.studio.
 - **Chapter 03 fragments:** `src/content/problems.ts` (copy + chaos positions) and
   `chapters/friction/faces.tsx` (UI). Demo data is fictional and labelled as such.
 - **Placeholders** render a visible “Placeholder” label. Search for `placeholder: true`.

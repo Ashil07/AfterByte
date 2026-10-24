@@ -12,7 +12,7 @@ export const site = {
   /** Public URL used for canonical links, sitemap and structured data. */
   url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://afterbyte.example",
   /** Public contact email. Leave empty to hide it. */
-  email: "",
+  email: "afterbytestudio.business@gmail.com",
   /** Public phone number. `tel` is the dialable form; leave both empty to hide it. */
   phone: { display: "+91 98456 35981", tel: "+919845635981" },
   /** Real profiles only. */

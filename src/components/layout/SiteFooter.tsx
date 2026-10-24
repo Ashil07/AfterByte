@@ -8,10 +8,10 @@ export function SiteFooter() {
     <footer className="relative border-t border-line bg-ink">
       <div className="frame pb-8 pt-16 md:pt-24">
         <div className="grid-12 gap-y-10">
-          <p className="col-span-12 max-w-[22ch] font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.05] md:col-span-6">
+          <p className="col-span-12 max-w-[22ch] font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.05] lg:col-span-5">
             Thoughtfully designed. <em className="text-ice">Intelligently built.</em>
           </p>
-          <nav aria-label="Footer" className="col-span-6 md:col-span-3">
+          <nav aria-label="Footer" className="col-span-12 sm:col-span-4 lg:col-span-2 lg:col-start-7">
             <p className="label mb-4 text-mute">Explore</p>
             <ul>
               {navigation.map((n) => (
@@ -28,7 +28,8 @@ export function SiteFooter() {
               </li>
             </ul>
           </nav>
-          <div className="col-span-6 md:col-span-3">
+          {/* Wide enough for the full email address at every breakpoint. */}
+          <div className="col-span-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
             <p className="label mb-4 text-mute">Elsewhere</p>
             {site.email || site.phone.tel || site.socials.length ? (
               <ul>
@@ -41,7 +42,7 @@ export function SiteFooter() {
                 )}
                 {site.email && (
                   <li>
-                    <a href={`mailto:${site.email}`} className="inline-block py-2 text-paper/80 hover:text-paper">
+                    <a href={`mailto:${site.email}`} className="inline-block py-2 text-paper/80 [overflow-wrap:anywhere] hover:text-paper">
                       {site.email}
                     </a>
                   </li>
