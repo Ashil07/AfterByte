@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { Halftone } from "@/components/halftone/Halftone";
+import { wordmarkAssembly } from "@/components/halftone/wordmarkAssembly";
 import { MOTION, SplitText, gsap, useGSAP } from "@/components/motion/gsap";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ButtonLink } from "@/components/ui/Button";
@@ -11,7 +12,8 @@ import { site } from "@/content/site";
 
 /**
  * 01 — Opening. A living version of the logo artwork: halftone light sweeps in
- * from the bottom-left, the wordmark rises, then the headline and actions.
+ * from the bottom-left while the wordmark gathers out of halftone dots (the
+ * footer reverses this), then the headline and actions.
  * Scrolling away recedes the whole scene into the next chapter.
  */
 export function Opening() {
@@ -34,8 +36,19 @@ export function Opening() {
         const split = SplitText.create(headline, { type: "lines", mask: "lines", linesClass: "split-line" });
 
         const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-        tl.fromTo(q("[data-wordmark]"), { opacity: 0, y: desktop ? 28 : 16 }, { opacity: 1, y: 0, duration: 1.6 }, 0.25)
-          .set(headline, { opacity: 1 }, 0.8)
+        const wordmark = q<HTMLImageElement>("[data-wordmark]")[0];
+        const dots = q<HTMLCanvasElement>("[data-wordmark-dots]")[0];
+        // Only when the image is already decoded (it is preloaded); otherwise a plain rise.
+        const assembly = wordmarkAssembly(dots, wordmark);
+        if (assembly) {
+          const run = { t: 0 };
+          tl.to(run, { t: 1, duration: 1.5, ease: "none", onUpdate: () => assembly.draw(run.t) }, 0.2)
+            .to(wordmark, { opacity: 1, duration: 0.7, ease: "power2.out" }, 1.35)
+            .to(dots, { opacity: 0, duration: 0.6, ease: "power1.out", onComplete: assembly.dispose }, 1.5);
+        } else {
+          tl.fromTo(wordmark, { opacity: 0, y: desktop ? 28 : 16 }, { opacity: 1, y: 0, duration: 1.6 }, 0.25);
+        }
+        tl.set(headline, { opacity: 1 }, 0.8)
           .from(split.lines, { yPercent: 105, duration: 1.2, stagger: 0.1 }, 0.8)
           .fromTo(q("[data-after]"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, 1.15);
 
@@ -47,7 +60,10 @@ export function Opening() {
           .to(q("[data-content]"), { yPercent: desktop ? -14 : -8, opacity: 0, ease: "none" }, 0)
           .to(q("[data-field]"), { scale: 1.12, opacity: 0.2, ease: "none" }, 0);
 
-        return () => split.revert();
+        return () => {
+          split.revert();
+          assembly?.dispose();
+        };
       });
 
       return () => mm.revert();
@@ -79,17 +95,20 @@ export function Opening() {
         </div>
 
         <div className="flex items-center justify-center">
-          <Image
-            data-intro
-            data-wordmark
-            src="/brand/wordmark.png"
-            alt="AfterByte"
-            width={1706}
-            height={514}
-            priority
-            sizes="(min-width: 1024px) 54vw, 84vw"
-            className="h-auto w-[min(84vw,880px)] select-none lg:w-[54vw]"
-          />
+          <div className="relative">
+            <Image
+              data-intro
+              data-wordmark
+              src="/brand/wordmark.png"
+              alt="AfterByte"
+              width={1706}
+              height={514}
+              priority
+              sizes="(min-width: 1024px) 54vw, 84vw"
+              className="h-auto w-[min(84vw,880px)] select-none lg:w-[54vw]"
+            />
+            <canvas data-wordmark-dots aria-hidden className="pointer-events-none absolute" />
+          </div>
         </div>
 
         <div className="grid-12 items-end gap-y-8">

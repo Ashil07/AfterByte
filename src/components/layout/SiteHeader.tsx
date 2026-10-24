@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { chapters, navigation } from "@/content/chapters";
-import { gsap, useGSAP } from "@/components/motion/gsap";
+import { MOTION, gsap, useGSAP } from "@/components/motion/gsap";
 import { ButtonLink } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 
@@ -32,6 +32,8 @@ export function SiteHeader() {
       if (hero) heroIo.observe(hero);
       else header.dataset.past = "true";
 
+      const links = Array.from(header.querySelectorAll<HTMLAnchorElement>("[data-nav-link]"));
+
       // Current chapter = the section crossing a line 45% down the viewport.
       // IntersectionObserver is unaffected by pin spacing and costs nothing per frame.
       const io = new IntersectionObserver(
@@ -39,9 +41,18 @@ export function SiteHeader() {
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
             const c = chapters.find((ch) => ch.id === entry.target.id);
-            if (!c || !numberRef.current || !titleRef.current || numberRef.current.textContent === c.number) continue;
-            numberRef.current.textContent = c.number;
+            const number = numberRef.current;
+            if (!c || !number || !titleRef.current || number.textContent === c.number) continue;
+            const forward = Number(c.number) > Number(number.textContent);
+            number.textContent = c.number;
             titleRef.current.textContent = c.title;
+            for (const link of links) {
+              if (link.hash === `#${c.id}`) link.setAttribute("aria-current", "location");
+              else link.removeAttribute("aria-current");
+            }
+            if (window.matchMedia(MOTION.reduced).matches) continue;
+            // The number rolls in from the direction you are scrolling.
+            gsap.fromTo(number, { yPercent: forward ? 100 : -100 }, { yPercent: 0, duration: 0.45, ease: "expo.out", overwrite: true });
             gsap.fromTo(titleRef.current, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.4, overwrite: true });
           }
         },
@@ -59,10 +70,35 @@ export function SiteHeader() {
     { scope: headerRef },
   );
 
-  const close = useCallback(() => {
-    setOpen(false);
-    toggleRef.current?.focus();
+  /** Fade the menu out, then hide it. Links skip this: the page jumps away anyway. */
+  const hide = useCallback((after?: () => void) => {
+    const menu = menuRef.current;
+    const done = () => {
+      setOpen(false);
+      after?.();
+    };
+    if (!menu || window.matchMedia(MOTION.reduced).matches) return done();
+    gsap.to(menu, { opacity: 0, duration: 0.16, ease: "power1.out", overwrite: true, onComplete: done });
   }, []);
+
+  const close = useCallback(() => hide(() => toggleRef.current?.focus()), [hide]);
+
+  // Mobile menu entrance: the panel unrolls from under the header, then its rows follow.
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    if (!open || !menu) return;
+    if (window.matchMedia(MOTION.reduced).matches) {
+      gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.2, overwrite: true });
+      return;
+    }
+    gsap.set(menu, { opacity: 1 });
+    gsap.fromTo(menu, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.42, ease: "expo.out", overwrite: true });
+    gsap.fromTo(
+      menu.querySelectorAll("[data-menu-item]"),
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.45, ease: "expo.out", stagger: 0.04, delay: 0.06 },
+    );
+  }, [open]);
 
   // Mobile menu: Escape closes, focus stays inside, page does not scroll behind it.
   useEffect(() => {
@@ -109,8 +145,10 @@ export function SiteHeader() {
         </a>
 
         <p aria-hidden className="label hidden items-center gap-3 text-mute lg:flex">
-          <span ref={numberRef} className="text-paper">
-            01
+          <span className="inline-block overflow-hidden">
+            <span ref={numberRef} className="block text-paper">
+              01
+            </span>
           </span>
           <span className="h-px w-6 bg-line-strong" />
           <span ref={titleRef}>Opening</span>
@@ -122,7 +160,8 @@ export function SiteHeader() {
               <li key={item.href}>
                 <a
                   href={item.href}
-                  className="py-2 text-[0.875rem] text-mute transition-colors duration-300 hover:text-paper"
+                  data-nav-link
+                  className="relative py-2 text-[0.875rem] text-mute transition-colors duration-300 after:absolute after:inset-x-0 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out-soft hover:text-paper aria-[current=location]:text-paper aria-[current=location]:after:scale-x-100"
                 >
                   {item.label}
                 </a>
@@ -140,7 +179,7 @@ export function SiteHeader() {
           className="label flex h-11 items-center gap-3 text-paper lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => (open ? hide() : setOpen(true))}
         >
           <span>{open ? "Close" : "Menu"}</span>
           <span aria-hidden className="relative block h-2.5 w-5">
@@ -172,7 +211,7 @@ export function SiteHeader() {
         <nav aria-label="Chapters" className="frame flex min-h-full flex-col justify-between gap-10 pb-10 pt-8">
           <ol className="flex flex-col">
             {chapters.slice(1).map((c) => (
-              <li key={c.id} className="rule">
+              <li key={c.id} data-menu-item className="rule">
                 <a href={`#${c.id}`} onClick={() => setOpen(false)} className="flex items-baseline gap-4 py-3.5">
                   <span className="label w-6 text-mute">{c.number}</span>
                   <span className="font-serif text-[2rem] leading-none">{c.title}</span>
@@ -180,7 +219,7 @@ export function SiteHeader() {
               </li>
             ))}
           </ol>
-          <ButtonLink href="#contact" onClick={() => setOpen(false)} className="self-start">
+          <ButtonLink href="#contact" data-menu-item onClick={() => setOpen(false)} className="self-start">
             Start a project
           </ButtonLink>
         </nav>

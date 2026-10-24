@@ -37,11 +37,11 @@ full nine-chapter sequence.
 
 | # | id | Story beat | What happens | Component |
 |---|----|-----------|--------------|-----------|
-| 01 | `top` | Possibility | Living version of the logo. Halftone light sweeps in from bottom-left, wordmark rises, headline lines unmask, CTAs follow. Pointer light on desktop. Scene recedes on scroll. | `chapters/Opening.tsx` |
+| 01 | `top` | Possibility | Living version of the logo. Halftone light sweeps in from bottom-left while the wordmark gathers out of halftone dots drifting in along the light (`halftone/wordmarkAssembly.ts`, a plain rise if the image is not decoded yet; the footer reverses it), headline lines unmask, CTAs follow. Pointer light on desktop. Scene recedes on scroll. | `chapters/Opening.tsx` |
 | 02 | `vision` | Possibility | “You’ve got the vision.” Second line inks in word by word (scrub). Three starting points reshape a halftone figure (seed / growth / order; desktop only — on mobile each choice expands inline). Optional. | `chapters/Vision.tsx` |
 | 03 | `friction` | Friction | **Main moment.** Desktop: pinned ~3.4 viewports. Five UI fragments (search, messages, spreadsheet, reminders, idea note) pile up in disarray with their problem captions; headline yields to “You don’t need more complexity. You need a better system.”; fragments straighten into a row, swap messy faces for clean ones, joined by a line; the statement then fades up and out and “Where we come in — We design and build digital solutions around the way your business actually works.” rises into its place. Mobile: one shorter sentence after the cards instead (“You need a better system, built around how your business actually works.”); desktop reduced motion: both full lines in natural flow. | `chapters/friction/*` |
 | 04 | `turning-point` | Discovery | **Hidden.** “What if everything just worked?” Scattered halftone resolves into three bands aligned with three rows of copy (website / software / automation). AfterByte introduced. On mobile/reduced motion it also shows the clean fragments (`.system-fallback`). | `chapters/TurningPoint.tsx` |
-| 05 | `services` | Transformation | Desktop: copy scrolls left, sticky panel right shows the matching demo assembled by scroll progress (website wireframe → site; app skeleton → screen; loose records → dashboard). Automation follows as a full-width four-step flow. | `chapters/Services.tsx`, `chapters/demos/*` |
+| 05 | `services` | Transformation | Desktop: the heading and service copy share the left column, sticky panel right (it starts beside the heading) shows the matching demo assembled by scroll progress (website wireframe → site; app skeleton → screen; loose records → dashboard). Automation follows as a full-width four-step flow. | `chapters/Services.tsx`, `chapters/demos/*` |
 | 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. | `chapters/Work.tsx` |
 | 07 | `team` | Connection | Staggered portraits from content data. | `chapters/Team.tsx` |
 | 08 | `approach` | Connection | Quiet: CSS-sticky statement + four principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). Still on desktop by design; on mobile each principle enters as reached (rule draws, numeral rises, copy follows). Below lg each principle shows only its title; tapping it opens the explanation (`ApproachPrinciple`). | `chapters/Approach.tsx`, `chapters/ApproachMotion.tsx`, `chapters/ApproachPrinciple.tsx` |
@@ -89,6 +89,7 @@ fades from a halftone into the page background.
 - `grid-12` utility = 12-column grid. Compositions are asymmetric and differ per
   chapter; avoid centering everything and repeated card grids.
 - Buttons (`ui/Button.tsx`) are rectangular (2px radius): `primary`, `outline`, `text`.
+  Primary/outline press down to `scale(0.97)` in 150ms.
   Arrows nudge on hover; primary lifts 1px. No pills.
 - Breakpoints: Tailwind defaults plus `xs` (30rem). Desktop storytelling starts at `lg` (1024px).
 
@@ -117,8 +118,10 @@ src/
     chapters/              one component per chapter; friction/ and contact/ subfolders
     chapters/demos/        DemoShell + Web/App/Systems demos + AutomationFlow, each exporting assemble*(el)
     halftone/              field.ts (pure light fields), engine.ts (canvas renderer), Halftone.tsx (React wrapper),
-                           WordmarkHalftone.tsx (footer wordmark hover effect)
-    layout/                SiteHeader (nav, chapter indicator, mobile menu), SiteFooter, Year,
+                           WordmarkHalftone.tsx (footer wordmark hover effect), wordmarkAssembly.ts
+                           (hero intro), coverage.ts (wordmark alpha → dot sizes, shared by both)
+    layout/                SiteHeader (nav with active section, rolling chapter indicator, animated
+                           mobile menu), SiteFooter, Year,
                            MobileActionBar (fixed “Start a project” + “Call” below lg)
     motion/                gsap.ts (registration + MOTION queries), RevealText, Magnetic
     ui/                    Button/ButtonLink, ChapterMark
@@ -151,6 +154,11 @@ projects, team, services or problems.
   Header chapter indicator and solid-header state use IntersectionObservers (immune
   to pin spacing).
 - Animate `transform`, `opacity`, `clip-path`, canvas draws. No blur filters.
+- **Tailwind 4 gotcha:** `translate-*`, `scale-*` and `rotate-*` set the separate CSS
+  `translate` / `scale` / `rotate` properties, not `transform`. A custom
+  `transition-[…]` list must name `translate`/`scale` (e.g.
+  `transition-[background-color,translate,scale]`), or the change snaps.
+  `transition-transform` already includes them.
 - **Halftone engine** draws on demand (intro sweep, transitions, pointer, morph,
   resize) via a single rAF request, skips work off-screen (IntersectionObserver),
   caps DPR at 2, batches dots into 12 colour paths. No perpetual loop. Pointer light

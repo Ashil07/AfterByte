@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { FINE_POINTER } from "@/components/motion/gsap";
+import { sampleCoverage } from "./coverage";
 
 const SRC = "/brand/wordmark.png";
 /** Grid pitch, reach of the cursor and how far dots bulge away from it (CSS px). */
@@ -47,26 +48,7 @@ export function WordmarkHalftone() {
 
     const measureCover = () => {
       if (!img?.complete || !w || !h) return;
-      const sw = cols * SS;
-      const sh = rows * SS;
-      const off = document.createElement("canvas");
-      off.width = sw;
-      off.height = sh;
-      const octx = off.getContext("2d", { willReadFrequently: true });
-      if (!octx) return;
-      octx.drawImage(img, 0, 0, (w / PITCH) * SS, (h / PITCH) * SS);
-      const data = octx.getImageData(0, 0, sw, sh).data;
-      cover = new Float32Array(cols * rows);
-      for (let j = 0; j < rows; j++) {
-        for (let i = 0; i < cols; i++) {
-          let sum = 0;
-          for (let y = 0; y < SS; y++) {
-            const row = (j * SS + y) * sw;
-            for (let x = 0; x < SS; x++) sum += data[(row + i * SS + x) * 4 + 3];
-          }
-          cover[j * cols + i] = sum / (SS * SS * 255);
-        }
-      }
+      cover = sampleCoverage(img, cols, rows, w, h, PITCH, SS);
     };
 
     const resize = () => {

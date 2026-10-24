@@ -126,19 +126,17 @@ export function Services() {
   return (
     <section ref={root} id="services" aria-labelledby="services-title" className="relative border-t border-line bg-ink-2 pb-28 pt-24 md:pb-40 md:pt-32">
       <div className="frame">
-        <div className="grid-12 gap-y-8">
-          <div className="col-span-12 lg:col-span-7">
-            <ChapterMark id="services" />
-            <RevealText id="services-title" className="display-l mt-8 max-w-[13ch] md:mt-10">
-              Four ways to get <em className="italic">there.</em>
-            </RevealText>
-          </div>
-        </div>
-
-        {/* 01–03: copy + sticky demo panel */}
-        <div className="grid-12 mt-16 md:mt-24">
+        {/* Heading and 01–03 share a column, so the sticky demo panel starts
+            beside the heading instead of leaving that side empty. */}
+        <div className="grid-12">
           {/* Bottom padding keeps the sticky panel in place while the last block is read. */}
           <div className="col-span-12 lg:col-span-5 lg:pb-[18vh]">
+            <div className="mb-16 md:mb-24 lg:mb-0">
+              <ChapterMark id="services" />
+              <RevealText id="services-title" className="display-l mt-8 max-w-[13ch] md:mt-10">
+                Four ways to get <em className="italic">there.</em>
+              </RevealText>
+            </div>
             {sticky.map((s) => (
               <article
                 key={s.id}

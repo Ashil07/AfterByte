@@ -44,3 +44,6 @@ next-env.d.ts
 
 # local Claude preview config
 /.claude/
+
+# Impeccable design plugin: local hook cache
+.impeccable/

@@ -88,7 +88,7 @@ export function Vision() {
                       </span>
                       <span
                         className={cn(
-                          "font-serif text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.05] transition-[color,transform] duration-500 ease-out-soft",
+                          "font-serif text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.05] transition-[color,translate] duration-500 ease-out-soft",
                           on ? "translate-x-2 text-paper" : "text-paper/55 group-hover:text-paper/85",
                         )}
                       >
