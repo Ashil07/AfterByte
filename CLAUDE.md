@@ -43,7 +43,7 @@ full nine-chapter sequence.
 | 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. | `chapters/Work.tsx` |
 | 07 | `team` | Connection | Staggered portraits from content data. | `chapters/Team.tsx` |
 | 08 | `approach` | Connection | Quiet: CSS-sticky statement + six principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). Still on desktop by design; on mobile the intro and each principle enter as reached (rule draws, numeral rises, copy follows). | `chapters/Approach.tsx`, `chapters/ApproachMotion.tsx` |
-| 09 | `contact` | Action | Closing halftone mirrors the opening and brightens on arrival; process steps; form. Footer carries the large wordmark as a bookend. | `chapters/contact/*`, `layout/SiteFooter.tsx` |
+| 09 | `contact` | Action | Closing halftone mirrors the opening and brightens on arrival; process steps; form. Footer carries the large wordmark as a bookend; on hover (fine pointer) it reverses the opening — the letters dissolve into halftone dots around the cursor and bulge away from it (`halftone/WordmarkHalftone.tsx`). | `chapters/contact/*`, `layout/SiteFooter.tsx` |
 
 The story must read correctly with all animation disabled (verified with
 `prefers-reduced-motion: reduce`).
@@ -114,7 +114,8 @@ src/
   components/
     chapters/              one component per chapter; friction/ and contact/ subfolders
     chapters/demos/        DemoShell + Web/App/Systems demos + AutomationFlow, each exporting assemble*(el)
-    halftone/              field.ts (pure light fields), engine.ts (canvas renderer), Halftone.tsx (React wrapper)
+    halftone/              field.ts (pure light fields), engine.ts (canvas renderer), Halftone.tsx (React wrapper),
+                           WordmarkHalftone.tsx (footer wordmark hover effect)
     layout/                SiteHeader (nav, chapter indicator, mobile menu), SiteFooter, Year,
                            MobileActionBar (fixed “Start a project” + “Call” below lg)
     motion/                gsap.ts (registration + MOTION queries), RevealText, Magnetic
@@ -151,7 +152,9 @@ projects, team, services or problems.
 - **Halftone engine** draws on demand (intro sweep, transitions, pointer, morph,
   resize) via a single rAF request, skips work off-screen (IntersectionObserver),
   caps DPR at 2, batches dots into 12 colour paths. No perpetual loop. Pointer light
-  needs `(hover: hover) and (pointer: fine)` and motion allowed. The engine is created
+  needs `(hover: hover) and (pointer: fine)` and motion allowed. The footer wordmark
+  uses the same rules: a canvas of dots sampled from the wordmark's alpha, plus a radial
+  mask set inline on the image from JS (not in globals.css). The engine is created
   in a layout effect so parents’ `useGSAP` callbacks can drive it immediately.
 - **Hero intro gating:** `html.js` (inline script) hides `[data-intro]` elements; GSAP
   reveals them and adds `.is-revealed`. A CSS fallback shows them after 3s regardless.

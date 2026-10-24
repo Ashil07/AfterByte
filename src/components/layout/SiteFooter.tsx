@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { WordmarkHalftone } from "@/components/halftone/WordmarkHalftone";
 import { navigation } from "@/content/chapters";
 import { site } from "@/content/site";
 import { Year } from "./Year";
@@ -61,14 +61,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <Image
-          src="/brand/wordmark.png"
-          alt="AfterByte"
-          width={1706}
-          height={514}
-          sizes="(min-width: 1600px) 1500px, 92vw"
-          className="mt-20 h-auto w-full select-none opacity-95 md:mt-28"
-        />
+        <WordmarkHalftone />
 
         <div className="label mt-8 flex flex-wrap items-center justify-between gap-4 text-mute">
           <p>
