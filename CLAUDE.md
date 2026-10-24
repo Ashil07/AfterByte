@@ -226,7 +226,9 @@ npm run assets         # regenerate brand/placeholder images (needs Python 3 + P
 `NEXT_PUBLIC_SITE_URL`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, and either
 `RESEND_API_KEY` or `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_SECURE`.
 
-**Hosting:** any Node host that runs Next.js 16 (Vercel works with zero config). The
+**Hosting:** any Node host that runs Next.js 16 (Vercel works with zero config; without
+`NEXT_PUBLIC_SITE_URL`, `site.url` falls back to Vercel’s
+`NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL`). The
 home page is fully static; only `/api/contact` runs on the server (Node runtime — it is
 the default; `export const runtime` is not allowed with `cacheComponents`).
 

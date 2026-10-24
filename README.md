@@ -52,7 +52,9 @@ SMTP_PASS=…
 RESEND_API_KEY=…
 ```
 
-Also set `NEXT_PUBLIC_SITE_URL` to the live URL (canonical links, sitemap, Open Graph).
+Set `NEXT_PUBLIC_SITE_URL` to the live URL (canonical links, sitemap, Open Graph) once a
+custom domain is connected. On Vercel it can be left unset: the project’s production
+`*.vercel.app` domain is used automatically.
 
 ## Editing content
 
@@ -70,5 +72,11 @@ content rules, design system and animation conventions.
 
 ## Deployment
 
-Deploy anywhere that runs Next.js 16 on Node ≥ 20.9 (e.g. Vercel). The home page is
-statically prerendered; only `/api/contact` runs on the server.
+Deploy anywhere that runs Next.js 16 on Node ≥ 20.9. The home page is statically
+prerendered; only `/api/contact` runs on the server.
+
+**Vercel:** Add New → Project → import the GitHub repository. The defaults (Next.js,
+`npm run build`) need no changes. Add the contact-form variables under Settings →
+Environment Variables and redeploy. Until they are set, the form honestly tells
+visitors it can’t send and points them to email and phone. Every push to `main`
+deploys to production automatically.
