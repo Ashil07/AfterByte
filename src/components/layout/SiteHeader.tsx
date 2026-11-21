@@ -7,7 +7,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { chapters } from "@/content/chapters";
 import { pages } from "@/content/pages";
 import { MOTION, gsap, useGSAP } from "@/components/motion/gsap";
-import { ButtonLink } from "@/components/ui/Button";
+import { ButtonLink, FillLayer } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { visibleById } from "@/lib/dom";
 
@@ -161,15 +161,17 @@ export function SiteHeader() {
         </p>
 
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
-          <ul className="flex items-center gap-7">
+          <ul className="flex items-center gap-1">
             {pages.map((page) => (
               <li key={page.href}>
                 <Link
                   href={page.href === "/" ? "/#top" : page.href}
                   aria-current={pathname === page.href ? "page" : undefined}
-                  className="relative py-2 text-[0.875rem] text-mute transition-colors duration-300 after:absolute after:inset-x-0 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out-soft hover:text-paper aria-[current=page]:text-paper aria-[current=page]:after:scale-x-100"
+                  data-fill
+                  className="relative isolate inline-flex h-9 items-center rounded-[2px] px-3 text-[0.875rem] text-mute transition-colors duration-300 [--fill:var(--color-paper)] *:not-first:relative *:not-first:mix-blend-difference after:absolute after:inset-x-3 after:bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out-soft hover:text-paper aria-[current=page]:text-paper aria-[current=page]:after:scale-x-100"
                 >
-                  {page.label}
+                  <FillLayer />
+                  <span>{page.label}</span>
                 </Link>
               </li>
             ))}
@@ -224,8 +226,10 @@ export function SiteHeader() {
                     href={page.href === "/" ? "/#top" : page.href}
                     aria-current={pathname === page.href ? "page" : undefined}
                     onClick={() => setOpen(false)}
-                    className="group/item flex items-baseline gap-4 py-4"
+                    data-fill
+                    className="group/item relative isolate -mx-2 flex items-baseline gap-4 rounded-[2px] px-2 py-4 [--fill:var(--color-paper)] *:not-first:relative *:not-first:mix-blend-difference hover:*:text-paper"
                   >
+                    <FillLayer />
                     <span className="label w-6 text-mute group-aria-[current=page]/item:text-ice">{String(i + 1).padStart(2, "0")}</span>
                     <span className="font-serif text-[2.5rem] leading-none">{page.label}</span>
                   </Link>

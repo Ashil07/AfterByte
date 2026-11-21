@@ -117,7 +117,8 @@ fades from a halftone into the page background.
   mouse enters until it floods primary (ice) and outline (paper) buttons, and shrinks
   away towards where it leaves (`motion/HoverFill.tsx`, one document listener for every
   `[data-fill]` element; `.btn-fill` in `globals.css`; `FillLayer` from `ui/Button.tsx`
-  adds it to non-Button links such as the `MobileActionBar` buttons). Outline text uses
+  adds it to non-Button links: the `MobileActionBar` buttons and the header's page links,
+  desktop and phone menu, which fill with paper). Outline text uses
   `mix-blend-difference` so it flips colour at the fill's edge. Mouse only; keyboard
   focus fills from the centre; instant under reduced motion.
 - Breakpoints: Tailwind defaults plus `xs` (30rem). Desktop storytelling starts at `lg` (1024px).
