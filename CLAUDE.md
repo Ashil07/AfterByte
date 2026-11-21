@@ -31,7 +31,11 @@ changes underneath, then the dots shrink away. One capture-phase click listener
 handles plain `<a>` and `next/link` alike; same-page hash links, new tabs, modified
 clicks and downloads are left alone; reduced motion and back/forward skip the cover.
 Links to a home section from another page (`/#services`) wait under the cover for the
-section and ScrollTrigger’s pin spacing, then jump. `NextChapter` (the last thing on
+section and ScrollTrigger’s pin spacing, then jump. Every navigation (and back/forward) jumps
+to the top *before* the next page mounts: window scroll is shared, and a page that
+mounts scrolled far down makes its `once` ScrollTriggers kill themselves mid-refresh,
+which throws (“reading 'end'”) and shows the error page on phones. Wheel/touch
+scrolling is blocked while the cover is up. `NextChapter` (the last thing on
 every page, below the footer) leads Home → Work → Contact → back to Home (“Back to the beginning”) and service pages → Contact:
 keep scrolling at the bottom (wheel ≈900px, touch ≈320px, ↓/Page Down/Space) and an ice
 line fills; when full it opens the next page through the transition. It drains if

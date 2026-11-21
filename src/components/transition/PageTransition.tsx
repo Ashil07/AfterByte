@@ -108,7 +108,14 @@ export function PageTransition() {
       if (s.busy) return;
       const href = url.pathname + url.search + url.hash;
       s.hash = url.hash.slice(1);
+      // Window scroll is shared by every page: start the next one at the top
+      // *before* it mounts. Otherwise it mounts scrolled to wherever this page
+      // was (e.g. the bottom of Contact), its one-time scroll animations fire
+      // and remove themselves while ScrollTrigger is still setting them up, and
+      // ScrollTrigger throws. A hash link jumps to its section afterwards.
+      const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       if (window.matchMedia(MOTION.reduced).matches) {
+        toTop();
         router.push(href);
         return;
       }
@@ -130,6 +137,7 @@ export function PageTransition() {
         onComplete: () => {
           s.covered = true;
           gsap.to(label, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out", overwrite: true });
+          toTop();
           router.push(href);
           // If the route never settles (error, offline), don't leave the screen covered.
           s.fallback = window.setTimeout(reveal, 5000);
@@ -137,9 +145,25 @@ export function PageTransition() {
       });
     };
 
+    // Back / forward: same reason as toTop() above — the page being restored
+    // must not mount at the old page's scroll position. Runs before React
+    // commits the route change (Next renders it in a later task).
+    const onPop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // While the cover is up, leftover wheel / swipe momentum must not scroll
+    // the page underneath (it would carry on into the next page).
+    const hold = (e: Event) => {
+      if (s.busy) e.preventDefault();
+    };
+
     document.addEventListener("click", onClick, true);
+    window.addEventListener("popstate", onPop);
+    window.addEventListener("wheel", hold, { passive: false });
+    window.addEventListener("touchmove", hold, { passive: false });
     return () => {
       document.removeEventListener("click", onClick, true);
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("wheel", hold);
+      window.removeEventListener("touchmove", hold);
       window.clearTimeout(s.fallback);
     };
   }, [router]);
@@ -157,7 +181,12 @@ export function PageTransition() {
       revealRef.current();
     };
     if (!s.hash) {
-      later(finish, 60);
+      // Next's own post-navigation scroll can land mid-page on phones; the
+      // new page always opens at its top, so settle there before revealing.
+      later(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        finish();
+      }, 60);
     } else {
       // The section may not be laid out yet, and ScrollTrigger resets the scroll
       // while it adds pin spacing. Wait for the element, let the layout settle,
