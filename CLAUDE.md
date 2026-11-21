@@ -48,13 +48,13 @@ The visitor is the protagonist, their business is the challenge, AfterByte is th
 guide. Sections are numbered chapters; the desktop header shows the current one, so the in-section label (`ChapterMark`) is visible on phones and tablets only.
 
 **Currently hidden:** `work` is off on the home page (projects live only on `/work`;
-the nav’s Work link stays), `team` is switched off (`enabled: false` in
+the menu’s Work page stays), `team` is switched off (`enabled: false` in
 `src/content/chapters.ts`) until real profiles are ready, and
 `turning-point` is switched off because its closing line (“Where we come in”) now
 ends chapter 03. Their components and content are intact. Chapter numbers are
 assigned to enabled chapters only, so the live page runs 01–06 (Services = 04,
-Approach = 05, Contact = 06), and navigation links
-to hidden chapters are dropped automatically. The numbers in the table below are the
+Approach = 05, Contact = 06), and the phone menu’s chapter links
+skip hidden chapters. The numbers in the table below are the
 full nine-chapter sequence.
 
 | # | id | Story beat | What happens | Component |
@@ -145,8 +145,8 @@ src/
     halftone/              field.ts (pure light fields), engine.ts (canvas renderer), Halftone.tsx (React wrapper),
                            WordmarkHalftone.tsx (footer wordmark hover effect), wordmarkAssembly.ts
                            (hero intro), coverage.ts (wordmark alpha → dot sizes, shared by both)
-    layout/                SiteHeader (nav with active section, rolling chapter indicator, animated
-                           mobile menu), SiteFooter, Year,
+    layout/                SiteHeader (page links Home/Work/Contact from `pages.ts`, rolling chapter
+                           indicator, animated mobile menu: pages large, home chapters small), SiteFooter, Year,
                            MobileActionBar (fixed “Start a project” + “Call” + “WhatsApp” below lg)
     motion/                gsap.ts (registration + MOTION queries), RevealText, Magnetic
     transition/            PageTransition (dot cover between pages), NextChapter (footer panel)
@@ -232,7 +232,7 @@ projects, team, services or problems.
 
 - **Showing / hiding chapters:** set `enabled` in `src/content/chapters.ts`. To bring
   back Selected Work or the Team, flip `work` / `team` to `true` — `page.tsx`, the
-  numbering, header indicator, mobile menu and nav all follow. Turning point, Work
+  numbering, header indicator and the phone menu’s chapter links follow. Turning point, Work
   and Team render through `chapters/OptionalChapter.tsx` (client-side dynamic
   imports), so their code is only downloaded when they are enabled.
 - **Projects:** edit `src/content/projects.ts`. Add images to `public/work/` (≈1600px

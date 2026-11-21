@@ -1,12 +1,13 @@
 /**
- * The site's pages, in reading order. The “Next chapter” panel above the
- * footer and the page-transition label read from this list. To add a page
+ * The site's pages, in reading order. The header menu (`label`), the “Next
+ * chapter” panel above the footer and the page-transition label (`title`)
+ * read from this list. To add a page
  * (e.g. /about), add it here and create app/<slug>/page.tsx.
  */
 export const pages = [
-  { href: "/", title: "The story" },
-  { href: "/work", title: "Selected work" },
-  { href: "/contact", title: "Start a project" },
+  { href: "/", title: "The story", label: "Home" },
+  { href: "/work", title: "Selected work", label: "Work" },
+  { href: "/contact", title: "Start a project", label: "Contact" },
 ] as const;
 
 /** Title shown while the transition covers the screen. */

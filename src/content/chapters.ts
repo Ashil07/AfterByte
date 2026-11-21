@@ -3,7 +3,7 @@
  *
  * Set `enabled: false` to take a chapter off the page without deleting its
  * component or content. Numbers are assigned to enabled chapters only, so the
- * sequence never skips, and navigation links to hidden chapters disappear.
+ * sequence never skips, and the menu’s links to hidden chapters disappear.
  */
 const allChapters = [
   { id: "top", title: "Opening", enabled: true },
@@ -35,17 +35,3 @@ export function chapter(id: ChapterId) {
   if (!found) throw new Error(`Chapter "${id}" is not enabled`);
   return found;
 }
-
-/** Primary navigation. Links to disabled chapters are dropped automatically. */
-export const navigation = (
-  [
-    { chapter: "services", label: "Services" },
-    { chapter: "work", label: "Work" },
-    { chapter: "approach", label: "Approach" },
-    { chapter: "team", label: "Team" },
-  ] as const
-)
-  // Work is a page of its own, so its link stays even though the chapter is off.
-  .filter((n) => n.chapter === "work" || isChapterEnabled(n.chapter))
-  // Work has its own page; the others are chapters of the home page.
-  .map((n) => ({ href: n.chapter === "work" ? "/work" : `/#${n.chapter}`, label: n.label }));

@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { chapters, navigation } from "@/content/chapters";
+import { chapters } from "@/content/chapters";
+import { pages } from "@/content/pages";
 import { MOTION, gsap, useGSAP } from "@/components/motion/gsap";
 import { ButtonLink } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -43,8 +44,6 @@ export function SiteHeader() {
         header.dataset.home = "false";
       }
 
-      const links = Array.from(header.querySelectorAll<HTMLAnchorElement>("[data-nav-link]"));
-
       // Current chapter = the section crossing a line 45% down the viewport.
       // IntersectionObserver is unaffected by pin spacing and costs nothing per frame.
       const io = new IntersectionObserver(
@@ -57,10 +56,6 @@ export function SiteHeader() {
             const forward = Number(c.number) > Number(number.textContent);
             number.textContent = c.number;
             titleRef.current.textContent = c.title;
-            for (const link of links) {
-              if (link.hash === `#${c.id}`) link.setAttribute("aria-current", "location");
-              else link.removeAttribute("aria-current");
-            }
             if (window.matchMedia(MOTION.reduced).matches) continue;
             // The number rolls in from the direction you are scrolling.
             gsap.fromTo(number, { yPercent: forward ? 100 : -100 }, { yPercent: 0, duration: 0.45, ease: "expo.out", overwrite: true });
@@ -167,15 +162,15 @@ export function SiteHeader() {
 
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
           <ul className="flex items-center gap-7">
-            {navigation.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  data-nav-link
-                  className="relative py-2 text-[0.875rem] text-mute transition-colors duration-300 after:absolute after:inset-x-0 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out-soft hover:text-paper aria-[current=location]:text-paper aria-[current=location]:after:scale-x-100"
+            {pages.map((page) => (
+              <li key={page.href}>
+                <Link
+                  href={page.href === "/" ? "/#top" : page.href}
+                  aria-current={pathname === page.href ? "page" : undefined}
+                  className="relative py-2 text-[0.875rem] text-mute transition-colors duration-300 after:absolute after:inset-x-0 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out-soft hover:text-paper aria-[current=page]:text-paper aria-[current=page]:after:scale-x-100"
                 >
-                  {item.label}
-                </a>
+                  {page.label}
+                </Link>
               </li>
             ))}
           </ul>
@@ -219,17 +214,36 @@ export function SiteHeader() {
         hidden={!open}
         className="fixed inset-x-0 bottom-0 top-[var(--header-h)] overflow-y-auto bg-ink lg:hidden"
       >
-        <nav aria-label="Chapters" className="frame flex min-h-full flex-col justify-between gap-10 pb-10 pt-8">
-          <ol className="flex flex-col">
-            {chapters.slice(1).map((c) => (
-              <li key={c.id} data-menu-item className="rule">
-                <a href={`/#${c.id}`} onClick={() => setOpen(false)} className="flex items-baseline gap-4 py-3.5">
-                  <span className="label w-6 text-mute">{c.number}</span>
-                  <span className="font-serif text-[2rem] leading-none">{c.title}</span>
-                </a>
-              </li>
-            ))}
-          </ol>
+        <nav aria-label="Menu" className="frame flex min-h-full flex-col justify-between gap-10 pb-10 pt-8">
+          <div>
+            {/* The site's pages, large. */}
+            <ol className="flex flex-col">
+              {pages.map((page, i) => (
+                <li key={page.href} data-menu-item className="rule">
+                  <Link
+                    href={page.href === "/" ? "/#top" : page.href}
+                    aria-current={pathname === page.href ? "page" : undefined}
+                    onClick={() => setOpen(false)}
+                    className="group/item flex items-baseline gap-4 py-4"
+                  >
+                    <span className="label w-6 text-mute group-aria-[current=page]/item:text-ice">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="font-serif text-[2.5rem] leading-none">{page.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+            {/* The home page's chapters, small, for jumping straight to one. */}
+            <p data-menu-item className="label mt-10 text-mute">On the home page</p>
+            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1">
+              {chapters.slice(1).filter((c) => c.id !== "contact").map((c) => (
+                <li key={c.id} data-menu-item>
+                  <Link href={`/#${c.id}`} onClick={() => setOpen(false)} className="flex min-h-10 items-center text-[0.9375rem] text-paper/75">
+                    {c.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
           <ButtonLink href="/contact" data-menu-item onClick={() => setOpen(false)} className="self-start">
             Start a project
           </ButtonLink>
