@@ -157,7 +157,7 @@ body {
 
 /* ---------------------------------------------------------------------------
    Chapter 03 pinned layout. Only applies while JS has set data-pinned (desktop
-   with motion allowed). Headline and statement share one grid cell so one can
+   with motion allowed). The headline and “Where we come in” share one grid cell so one can
    replace the other; fragments sit in an aligned row at the bottom.
    --------------------------------------------------------------------------- */
 .friction[data-pinned] .friction-stage {
@@ -167,16 +167,11 @@ body {
   padding-top: calc(var(--header-h) + 1.75rem);
   padding-bottom: clamp(1.5rem, 4vh, 3rem);
 }
-.friction[data-pinned] .friction-head,
-.friction[data-pinned] .friction-statement {
+.friction[data-pinned] .friction-head {
   grid-row: 2;
   grid-column: 1;
   position: relative;
   z-index: 2;
-}
-.friction[data-pinned] .friction-statement {
-  margin-top: clamp(1.5rem, 4vh, 2.5rem);
-  align-self: start;
 }
 .friction[data-pinned] .friction-grid {
   grid-row: 3;

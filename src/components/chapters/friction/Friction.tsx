@@ -4,20 +4,29 @@ import { useRef } from "react";
 import { MOTION, gsap, useGSAP } from "@/components/motion/gsap";
 import { ChapterMark } from "@/components/ui/ChapterMark";
 import { problems } from "@/content/problems";
+import { cn } from "@/lib/cn";
 import { cleanFaces, messyFaces } from "./faces";
+
+/** Each card's place on the phone pile: alternating sides, tilts and small drops. */
+const pile = [
+  "max-lg:left-0 max-lg:-rotate-3",
+  "max-lg:right-0 max-lg:translate-y-3 max-lg:rotate-2",
+  "max-lg:left-1 max-lg:translate-y-6 max-lg:-rotate-1",
+  "max-lg:right-1 max-lg:translate-y-9 max-lg:rotate-3",
+];
 
 /**
  * 03 — Complications. The main storytelling moment.
  *
- * Desktop with motion: the stage pins for ~2.6 viewports. Fragments pile up one
- * by one in disarray (accumulation), the headline gives way to the statement,
- * then every fragment straightens into an aligned row and swaps its messy face
- * for a clean one, joined by a single line: one system. Finally the statement
- * hands over to “Where we come in”: what AfterByte does about it.
+ * Desktop with motion: the stage pins for ~1.8 viewports. Four fragments pile
+ * up in disarray (accumulation), the headline leaves, every fragment
+ * straightens into an aligned row and swaps its messy face for a clean one,
+ * joined by a single line: one system. Then “Where we come in” rises with the
+ * one closing sentence.
  *
- * Mobile: natural flow. Headline, the five problems as cards, then one short
- * sentence that joins the statement and “Where we come in”. Desktop with
- * reduced motion or no JS: the same flow with both full lines.
+ * Below lg: the fragments land on one messy pile (a single card's height)
+ * with the four problems as a short list beneath, then the same sentence.
+ * Desktop with reduced motion or no JS: the row and the sentence, unpinned.
  */
 export function Friction() {
   const root = useRef<HTMLElement>(null);
@@ -36,7 +45,7 @@ export function Friction() {
         const cards = q<HTMLElement>("[data-card]");
         const where = q<HTMLElement>("[data-where]")[0];
         const chaos = problems.map((p) => p.chaos);
-        // “Where we come in” takes the statement’s place while pinned. Set inline
+        // “Where we come in” takes the headline’s place while pinned. Set inline
         // so the placement travels with this script and is undone on revert.
         Object.assign(where.style, {
           gridRow: "2",
@@ -57,7 +66,7 @@ export function Friction() {
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: () => `+=${window.innerHeight * 2.6}`,
+            end: () => `+=${window.innerHeight * 1.8}`,
             pin: stage,
             scrub: 0.8,
             invalidateOnRefresh: true,
@@ -67,7 +76,6 @@ export function Friction() {
 
         gsap.set(q("[data-clean]"), { opacity: 0 });
         gsap.set(q("[data-solution]"), { opacity: 0, y: 8 });
-        gsap.set(q("[data-statement]"), { opacity: 0, y: 40 });
         gsap.set(q("[data-system-line]"), { scaleX: 0 });
         gsap.set(q("[data-where] > *"), { opacity: 0, y: 30 });
 
@@ -90,30 +98,28 @@ export function Friction() {
               rotation: chaos[i].r,
               duration: 1.2,
             },
-            i * 0.9,
+            i * 0.8,
           );
         });
 
         // 2. The turn — the headline leaves and the fragments straighten into
-        //    one aligned row. The statement only arrives once the top-right,
-        //    where the lifted fragments were, is clear again.
-        tl.to(q("[data-head]"), { opacity: 0, y: -40, duration: 1, ease: "power2.in" }, 5.4)
-          .to(cards, { x: 0, y: 0, rotation: 0, duration: 2, ease: "power3.inOut", stagger: 0.12 }, 5.6)
-          .to(q("[data-statement]"), { opacity: 1, y: 0, duration: 1.2 }, 7.9);
+        //    one aligned row.
+        tl.to(q("[data-head]"), { opacity: 0, y: -40, duration: 1, ease: "power2.in" }, 3.6).to(
+          cards,
+          { x: 0, y: 0, rotation: 0, duration: 1.8, ease: "power3.inOut", stagger: 0.1 },
+          3.8,
+        );
 
         // 3. Clarity — messy faces give way to clean ones, joined by a line.
-        tl.to(q("[data-messy]"), { opacity: 0, duration: 0.8, stagger: 0.12 }, 7.0)
-          .to(q("[data-clean]"), { opacity: 1, duration: 0.8, stagger: 0.12 }, 7.0)
+        tl.to(q("[data-messy]"), { opacity: 0, duration: 0.8, stagger: 0.1 }, 4.9)
+          .to(q("[data-clean]"), { opacity: 1, duration: 0.8, stagger: 0.1 }, 4.9)
           // Each caption is gone before its replacement starts, so the two never stack.
-          .to(q("[data-problem]"), { opacity: 0, y: -8, duration: 0.45, stagger: 0.12 }, 7.1)
-          .to(q("[data-solution]"), { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 }, 7.6)
-          .to(q("[data-system-line]"), { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 8.6);
+          .to(q("[data-problem]"), { opacity: 0, y: -8, duration: 0.45, stagger: 0.1 }, 5.0)
+          .to(q("[data-solution]"), { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, 5.4)
+          .to(q("[data-system-line]"), { scaleX: 1, duration: 1, ease: "power2.inOut" }, 5.8);
 
-        // 4. Where we come in — the statement steps aside for what we do about
-        //    it. It is fully gone before the new line rises into the same place.
-        tl.to(q("[data-statement]"), { opacity: 0, y: -30, duration: 0.9, ease: "power2.in" }, 10.2)
-          .to(q("[data-where] > *"), { opacity: 1, y: 0, duration: 1.2, stagger: 0.15 }, 11.0)
-          .to({}, { duration: 0.8 }); // brief hold before release
+        // 4. Where we come in — one sentence rises where the headline was.
+        tl.to(q("[data-where] > *"), { opacity: 1, y: 0, duration: 1.2, stagger: 0.15 }, 6.6).to({}, { duration: 0.6 }); // brief hold before release
 
         return () => {
           delete el.dataset.pinned;
@@ -122,14 +128,23 @@ export function Friction() {
       });
 
       mm.add(MOTION.mobile, () => {
-        q<HTMLElement>("[data-card]").forEach((card, i) => {
-          gsap.from(card, {
-            opacity: 0,
-            y: 36,
-            rotation: problems[i].chaos.r * 0.7,
-            duration: 0.9,
-            scrollTrigger: { trigger: card, start: "top 88%", once: true },
-          });
+        // Fragments drop onto the pile one after another, then the list follows.
+        const pileEl = q<HTMLElement>("[data-fragments]")[0];
+        gsap.from(q("[data-card]"), {
+          opacity: 0,
+          y: -48,
+          rotation: (i: number) => (i % 2 ? 8 : -8),
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.22,
+          scrollTrigger: { trigger: pileEl, start: "top 80%", once: true },
+        });
+        gsap.from(q("[data-pile-caption]"), {
+          opacity: 0,
+          y: 12,
+          duration: 0.6,
+          stagger: 0.08,
+          scrollTrigger: { trigger: q("[data-pile-captions]")[0], start: "top 88%", once: true },
         });
         gsap.from(q("[data-where] > *"), {
           opacity: 0,
@@ -156,7 +171,11 @@ export function Friction() {
           But somewhere along the way, things get <em>complicated.</em>
         </h2>
 
-        <ol data-fragments className="friction-grid mt-14 grid gap-x-4 gap-y-10 sm:grid-cols-2 md:mt-16 lg:grid-cols-5 lg:gap-y-0">
+        {/* Below lg the cards stack into one messy pile; from lg they form a row. */}
+        <ol
+          data-fragments
+          className="friction-grid relative mx-auto mt-12 h-[16rem] max-w-[28rem] md:mt-16 lg:mx-0 lg:grid lg:h-auto lg:max-w-none lg:grid-cols-4 lg:gap-x-4"
+        >
           <li aria-hidden className="friction-line hidden" data-system-line>
             <span className="label absolute -top-6 left-0 text-ice">One connected system</span>
           </li>
@@ -164,7 +183,7 @@ export function Friction() {
             const Messy = messyFaces[p.id];
             const Clean = cleanFaces[p.id];
             return (
-              <li key={p.id} data-card className="relative">
+              <li key={p.id} data-card className={cn("relative max-lg:absolute max-lg:top-0 max-lg:w-[88%]", pile[i])}>
                 <div aria-hidden className="grid h-[13.5rem] grid-rows-[minmax(0,1fr)] [grid-template-areas:'face'] *:[grid-area:face]">
                   <div data-messy>
                     <Messy />
@@ -173,7 +192,7 @@ export function Friction() {
                     <Clean />
                   </div>
                 </div>
-                <div className="relative mt-4 grid [grid-template-areas:'cap'] *:[grid-area:cap]">
+                <div className="relative mt-4 hidden [grid-template-areas:'cap'] *:[grid-area:cap] lg:grid">
                   <p data-problem className="text-[0.9375rem] leading-snug text-paper/80">
                     <span className="label mr-2 text-mute">{String(i + 1).padStart(2, "0")}</span>
                     {p.problem}
@@ -188,20 +207,19 @@ export function Friction() {
           })}
         </ol>
 
-        <p data-statement className="friction-statement display-m hidden lg:block mt-20 max-w-[20ch] text-balance md:mt-28 lg:ml-[41.66%]">
-          You don’t need more complexity. <em className="text-ice">You need a better system.</em>
-        </p>
-
+        {/* The pile's captions, as one short list (below lg only). */}
+        <ol data-pile-captions className="mt-10 space-y-3 lg:hidden">
+          {problems.map((p, i) => (
+            <li key={p.id} data-pile-caption className="flex gap-3 text-[0.9375rem] leading-snug text-paper/80">
+              <span className="label pt-0.5 text-mute">{String(i + 1).padStart(2, "0")}</span>
+              {p.problem}
+            </li>
+          ))}
+        </ol>
         <figure data-where className="friction-where grid-12 mt-20 gap-y-5 md:mt-28">
-          <figcaption className="label col-span-12 hidden text-mute lg:col-span-2 lg:block lg:pt-4">Where we come in</figcaption>
+          <figcaption className="label col-span-12 text-mute lg:col-span-2 lg:pt-4">Where we come in</figcaption>
           <p className="display-m col-span-12 max-w-[32ch] text-balance lg:col-span-10">
-            <span className="hidden lg:block">
-              We design and build digital solutions around the way your business <em className="text-ice">actually works.</em>
-            </span>
-            {/* Phones get one sentence instead of the statement plus this line. */}
-            <span className="lg:hidden">
-              You need a better system, built around how your business <em className="text-ice">actually works.</em>
-            </span>
+            You need a better system, built around how your business <em className="text-ice">actually works.</em>
           </p>
         </figure>
       </div>

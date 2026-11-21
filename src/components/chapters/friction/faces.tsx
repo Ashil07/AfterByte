@@ -133,19 +133,6 @@ function RemindersMessy() {
   );
 }
 
-function NoteMessy() {
-  return (
-    <div className="flex h-full flex-col bg-warm p-4 text-ink shadow-[0_1px_0_rgba(0,0,0,0.2)]">
-      <p className="font-serif text-[1.375rem] italic leading-none">app idea —</p>
-      <p className="mt-2.5 font-serif text-[1.0625rem] italic leading-tight text-ink/80">loyalty card? bookings? both??</p>
-      <p className="mt-1.5 font-serif text-[1.0625rem] italic leading-tight text-ink/50 line-through">website first or app first</p>
-      <p className="mt-auto font-serif text-[1.0625rem] italic leading-tight text-ink/80">where do I even start</p>
-    </div>
-  );
-}
-
-/* ---------------------------------- clean --------------------------------- */
-
 function SearchClean() {
   return (
     <Frame app="Search" meta={<span className="font-mono text-[0.625rem] text-ice">1st result</span>}>
@@ -239,29 +226,11 @@ function AutomationClean() {
   );
 }
 
-function PlanClean() {
-  return (
-    <Frame app="Project plan" meta={<span className="font-mono text-[0.625rem] text-mute">v1</span>}>
-      <p className="font-serif text-[1.125rem] leading-none text-paper">First version</p>
-      <ul className="mt-2.5 space-y-1.5">
-        {["Customer booking page", "Staff calendar", "Payment links"].map((s) => (
-          <li key={s} className="flex items-center gap-2 text-paper/85">
-            <span aria-hidden className="size-2.5 border border-ice/80 bg-ice/20" />
-            {s}
-          </li>
-        ))}
-      </ul>
-      <p className="mt-2.5 border-t border-line pt-2 text-mute">Later: loyalty card</p>
-    </Frame>
-  );
-}
-
 export const messyFaces: Record<Problem["id"], () => ReactNode> = {
   visibility: SearchMessy,
   bookings: MessagesMessy,
   stock: SheetMessy,
   repetition: RemindersMessy,
-  direction: NoteMessy,
 };
 
 export const cleanFaces: Record<Problem["id"], () => ReactNode> = {
@@ -269,5 +238,4 @@ export const cleanFaces: Record<Problem["id"], () => ReactNode> = {
   bookings: BookingsClean,
   stock: InventoryClean,
   repetition: AutomationClean,
-  direction: PlanClean,
 };

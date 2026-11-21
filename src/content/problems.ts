@@ -6,13 +6,14 @@
  * free height above the card row (-100 = top of the stage), r in degrees.
  *
  * The layout keeps text readable: each fragment stays over its own column, so
- * no two cross paths when they straighten. 04 and 05 rise into the empty
- * top-right beside the headline; 01–03 only tilt and jostle in place, because
- * the headline sits directly above them. Check several viewport sizes after
+ * no two cross paths when they straighten. 04 rises into the empty top-right
+ * beside the headline; 01–03 only tilt and jostle in place, because the
+ * headline sits directly above them. On phones the same fragments form one
+ * messy pile instead (see Friction.tsx). Check several viewport sizes after
  * changing (1280×720 is the tightest).
  */
 export type Problem = {
-  id: "visibility" | "bookings" | "stock" | "repetition" | "direction";
+  id: "visibility" | "bookings" | "stock" | "repetition";
   problem: string;
   solution: string;
   chaos: { x: number; y: number; r: number };
@@ -42,11 +43,5 @@ export const problems: Problem[] = [
     problem: "Repetitive tasks eat up your day.",
     solution: "Routine work, handled.",
     chaos: { x: 1, y: -92, r: 5 },
-  },
-  {
-    id: "direction",
-    problem: "A good idea with no clear next step.",
-    solution: "A clear first version.",
-    chaos: { x: 2, y: -58, r: -6 },
   },
 ];
