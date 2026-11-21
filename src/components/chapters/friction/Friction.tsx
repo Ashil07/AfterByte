@@ -16,17 +16,76 @@ const pile = [
 ];
 
 /**
- * Phone pile: drag the top card sideways and let go to throw it off; a short
- * drag springs back. Throwing the last card deals the whole pile back in.
- * Nothing is remembered: a refresh, or coming back from another page (the
- * effect re-runs when the hidden page is shown again), starts with the full
- * pile. Vertical drags still scroll the page (touch-action: pan-y).
- * Returns a cleanup that removes the listeners and puts every card back.
+ * Drag-to-throw. `pick` returns the element a press should move (or null).
+ * Drag it sideways and let go: past 30% of its width, or flicked, it flies
+ * off and `onThrow` is called; otherwise it springs back. The first 8px decide
+ * between a sideways drag and a scroll, so vertical swipes still scroll.
+ * Returns a cleanup that removes the listeners.
+ */
+function throwable(root: HTMLElement, pick: (target: Element) => HTMLElement | null, onThrow: (el: HTMLElement) => void) {
+  let drag: { id: number; el: HTMLElement; x0: number; y0: number; t0: number; dx: number; locked?: "x" | "y" } | null = null;
+
+  const onDown = (e: PointerEvent) => {
+    if (drag || e.button !== 0) return;
+    const el = pick(e.target as Element);
+    if (!el) return;
+    if (e.pointerType === "mouse") e.preventDefault(); // no text selection or image drag
+    drag = { id: e.pointerId, el, x0: e.clientX, y0: e.clientY, t0: performance.now(), dx: 0 };
+    gsap.killTweensOf(el);
+  };
+  const onMove = (e: PointerEvent) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0;
+    const dy = e.clientY - drag.y0;
+    if (!drag.locked && Math.hypot(dx, dy) > 8) {
+      drag.locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (drag.locked === "x") {
+        try {
+          drag.el.setPointerCapture(e.pointerId);
+        } catch {
+          // Pointer already gone; the window listeners still finish the drag.
+        }
+      }
+    }
+    if (drag.locked !== "x") return;
+    drag.dx = dx;
+    gsap.set(drag.el, { x: dx, rotation: dx * 0.06 });
+  };
+  const onUp = (e: PointerEvent) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const { el, dx, t0, locked } = drag;
+    drag = null;
+    if (locked !== "x") return;
+    const fast = Math.abs(dx) / Math.max(1, performance.now() - t0) > 0.6;
+    if (Math.abs(dx) < el.offsetWidth * 0.3 && !fast) {
+      gsap.to(el, { x: 0, rotation: 0, duration: 0.5, ease: "back.out(2)" });
+      return;
+    }
+    const dir = Math.sign(dx) || 1;
+    onThrow(el);
+    gsap.to(el, { x: dir * window.innerWidth, rotation: dir * 24, autoAlpha: 0, duration: 0.45, ease: "power2.in" });
+  };
+
+  root.addEventListener("pointerdown", onDown);
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  return () => {
+    root.removeEventListener("pointerdown", onDown);
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+  };
+}
+
+/**
+ * Phone pile: the top card can be thrown off; throwing the last one deals the
+ * whole pile back in. Nothing is remembered: a refresh, or coming back from
+ * another page (the effect re-runs when the hidden page is shown again),
+ * starts with the full pile. Returns a cleanup that also puts every card back.
  */
 function swipePile(pileEl: HTMLElement, cards: HTMLElement[], hint?: HTMLElement) {
   let gone = 0; // cards thrown so far; the top card is the last one not yet thrown
-  let drag: { id: number; card: HTMLElement; x0: number; y0: number; t0: number; dx: number; locked?: "x" | "y" } | null = null;
-  const top = () => cards[cards.length - 1 - gone];
   cards.forEach((c) => (c.style.touchAction = "pan-y"));
   if (hint) hint.hidden = false;
 
@@ -35,64 +94,20 @@ function swipePile(pileEl: HTMLElement, cards: HTMLElement[], hint?: HTMLElement
     gsap.set(cards, { x: 0, rotation: 0, autoAlpha: 1 });
     gsap.from(cards, { autoAlpha: 0, y: -48, rotation: (i: number) => (i % 2 ? 8 : -8), duration: 0.6, ease: "power3.out", stagger: 0.12 });
   };
+  const stop = throwable(
+    pileEl,
+    (target) => {
+      const card = target.closest<HTMLElement>("[data-card]");
+      return card && card === cards[cards.length - 1 - gone] ? card : null;
+    },
+    () => {
+      gone += 1;
+      if (gone === cards.length) gsap.delayedCall(0.8, deal);
+    },
+  );
 
-  const onDown = (e: PointerEvent) => {
-    const card = (e.target as Element).closest<HTMLElement>("[data-card]");
-    if (!card || card !== top() || drag) return;
-    drag = { id: e.pointerId, card, x0: e.clientX, y0: e.clientY, t0: performance.now(), dx: 0 };
-    gsap.killTweensOf(card);
-  };
-  const onMove = (e: PointerEvent) => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const dx = e.clientX - drag.x0;
-    const dy = e.clientY - drag.y0;
-    // Decide once whether this is a swipe or a scroll.
-    if (!drag.locked && Math.hypot(dx, dy) > 8) {
-      drag.locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-      if (drag.locked === "x") {
-        try {
-          drag.card.setPointerCapture(e.pointerId);
-        } catch {
-          // Pointer already gone; window listeners still finish the drag.
-        }
-      }
-    }
-    if (drag.locked !== "x") return;
-    drag.dx = dx;
-    gsap.set(drag.card, { x: dx, rotation: dx * 0.06 });
-  };
-  const onUp = (e: PointerEvent) => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const { card, dx, t0, locked } = drag;
-    drag = null;
-    if (locked !== "x") return;
-    const fast = Math.abs(dx) / Math.max(1, performance.now() - t0) > 0.6;
-    if (Math.abs(dx) < card.offsetWidth * 0.3 && !fast) {
-      gsap.to(card, { x: 0, rotation: 0, duration: 0.5, ease: "back.out(2)" });
-      return;
-    }
-    const dir = Math.sign(dx) || 1;
-    gone += 1;
-    const last = gone === cards.length;
-    gsap.to(card, {
-      x: dir * window.innerWidth,
-      rotation: dir * 24,
-      autoAlpha: 0,
-      duration: 0.45,
-      ease: "power2.in",
-      onComplete: last ? () => void gsap.delayedCall(0.35, deal) : undefined,
-    });
-  };
-
-  pileEl.addEventListener("pointerdown", onDown);
-  window.addEventListener("pointermove", onMove);
-  window.addEventListener("pointerup", onUp);
-  window.addEventListener("pointercancel", onUp);
   return () => {
-    pileEl.removeEventListener("pointerdown", onDown);
-    window.removeEventListener("pointermove", onMove);
-    window.removeEventListener("pointerup", onUp);
-    window.removeEventListener("pointercancel", onUp);
+    stop();
     gsap.killTweensOf(cards);
     gsap.killTweensOf(deal);
     gsap.set(cards, { clearProps: "x,y,rotation,opacity,visibility" });
@@ -140,6 +155,8 @@ export function Friction() {
           marginTop: "clamp(1.5rem, 4vh, 2.5rem)",
           position: "relative",
           zIndex: "2",
+          // It overlaps the cards while they can be thrown; it has no links.
+          pointerEvents: "none",
         });
         /** Free height above the card row, so lifted cards never leave the stage on short screens. */
         const lift = () =>
@@ -207,7 +224,78 @@ export function Friction() {
         // 4. Where we come in — one sentence rises where the headline was.
         tl.to(q("[data-where] > *"), { opacity: 1, y: 0, duration: 1.2, stagger: 0.15 }, 6.6).to({}, { duration: 0.6 }); // brief hold before release
 
+        // Any messy card can be grabbed and flung off (its face moves, so the
+        // scroll-driven card keeps its place). Thrown faces come back as the
+        // cards start to straighten: the system puts everything back in order.
+        const faces = cards.map((c) => c.firstElementChild as HTMLElement);
+        const thrown = new Set<HTMLElement>();
+        const restore = () => {
+          thrown.forEach((f) =>
+            gsap.fromTo(f, { x: 0, rotation: 0, scale: 0.92, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.5, ease: "power3.out", overwrite: true }),
+          );
+          thrown.clear();
+        };
+        tl.call(restore, undefined, 3.75);
+        const grabbable = (target: Element) => {
+          const face = target.closest<HTMLElement>("[data-card]")?.firstElementChild as HTMLElement | null;
+          return face && !thrown.has(face) && tl.time() < 3.6 ? face : null;
+        };
+        const stopThrow = throwable(grid, grabbable, (face) => thrown.add(face));
+
+        // Over a card that can be thrown: a grab hand plus a small “Drag” disc
+        // that follows the pointer (mouse only); a closed hand while dragging.
+        const tag = q<HTMLElement>("[data-drag-cursor]")[0];
+        const toX = gsap.quickTo(tag, "x", { duration: 0.25, ease: "power3.out" });
+        const toY = gsap.quickTo(tag, "y", { duration: 0.25, ease: "power3.out" });
+        let shown = false;
+        let held = false;
+        const show = (on: boolean) => {
+          if (on === shown) return;
+          shown = on;
+          gsap.to(tag, { scale: on ? 1 : 0, autoAlpha: on ? 1 : 0, duration: 0.25, ease: on ? "back.out(2)" : "power2.in", overwrite: "auto" });
+        };
+        const onHover = (e: PointerEvent) => {
+          if (e.pointerType !== "mouse") return;
+          const over = held || !!grabbable(e.target as Element);
+          if (!over && !shown) return;
+          // Appearing: start under the pointer instead of gliding in from the last spot.
+          if (!shown) gsap.set(tag, { x: e.clientX, y: e.clientY });
+          toX(e.clientX);
+          toY(e.clientY);
+          grid.style.cursor = held ? "grabbing" : over ? "grab" : "";
+          show(over);
+        };
+        const onPress = (e: PointerEvent) => {
+          if (e.pointerType === "mouse" && grabbable(e.target as Element)) {
+            held = true;
+            grid.style.cursor = document.body.style.cursor = "grabbing";
+          }
+        };
+        const onRelease = () => {
+          if (!held) return;
+          held = false;
+          document.body.style.cursor = "";
+          grid.style.cursor = "";
+          show(false);
+        };
+        const onLeave = () => !held && show(false);
+        gsap.set(tag, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
+        tag.hidden = false;
+        grid.addEventListener("pointerdown", onPress);
+        grid.addEventListener("pointerleave", onLeave);
+        window.addEventListener("pointerup", onRelease);
+        window.addEventListener("pointermove", onHover, { passive: true });
+
         return () => {
+          stopThrow();
+          grid.removeEventListener("pointerdown", onPress);
+          grid.removeEventListener("pointerleave", onLeave);
+          window.removeEventListener("pointerup", onRelease);
+          window.removeEventListener("pointermove", onHover);
+          grid.style.cursor = document.body.style.cursor = "";
+          tag.hidden = true;
+          gsap.killTweensOf(faces);
+          gsap.set(faces, { clearProps: "x,rotation,scale,opacity,visibility,cursor" });
           delete el.dataset.pinned;
           where.style.cssText = "";
         };
@@ -294,6 +382,15 @@ export function Friction() {
             );
           })}
         </ol>
+        {/* Desktop drag cursor: follows the pointer over a card that can be thrown. */}
+        <span
+          data-drag-cursor
+          aria-hidden
+          hidden
+          className="label pointer-events-none fixed left-0 top-0 z-30 flex size-16 items-center justify-center rounded-full bg-ice text-ink"
+        >
+          Drag
+        </span>
         {/* Shown by swipePile (phones with motion), so it never promises a gesture that doesn't work. */}
         <p data-swipe-hint hidden className="label mt-6 text-center text-mute lg:hidden">
           Swipe the mess away
