@@ -16,6 +16,92 @@ const pile = [
 ];
 
 /**
+ * Phone pile: drag the top card sideways and let go to throw it off; a short
+ * drag springs back. Throwing the last card deals the whole pile back in.
+ * Nothing is remembered: a refresh, or coming back from another page (the
+ * effect re-runs when the hidden page is shown again), starts with the full
+ * pile. Vertical drags still scroll the page (touch-action: pan-y).
+ * Returns a cleanup that removes the listeners and puts every card back.
+ */
+function swipePile(pileEl: HTMLElement, cards: HTMLElement[], hint?: HTMLElement) {
+  let gone = 0; // cards thrown so far; the top card is the last one not yet thrown
+  let drag: { id: number; card: HTMLElement; x0: number; y0: number; t0: number; dx: number; locked?: "x" | "y" } | null = null;
+  const top = () => cards[cards.length - 1 - gone];
+  cards.forEach((c) => (c.style.touchAction = "pan-y"));
+  if (hint) hint.hidden = false;
+
+  const deal = () => {
+    gone = 0;
+    gsap.set(cards, { x: 0, rotation: 0, autoAlpha: 1 });
+    gsap.from(cards, { autoAlpha: 0, y: -48, rotation: (i: number) => (i % 2 ? 8 : -8), duration: 0.6, ease: "power3.out", stagger: 0.12 });
+  };
+
+  const onDown = (e: PointerEvent) => {
+    const card = (e.target as Element).closest<HTMLElement>("[data-card]");
+    if (!card || card !== top() || drag) return;
+    drag = { id: e.pointerId, card, x0: e.clientX, y0: e.clientY, t0: performance.now(), dx: 0 };
+    gsap.killTweensOf(card);
+  };
+  const onMove = (e: PointerEvent) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0;
+    const dy = e.clientY - drag.y0;
+    // Decide once whether this is a swipe or a scroll.
+    if (!drag.locked && Math.hypot(dx, dy) > 8) {
+      drag.locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (drag.locked === "x") {
+        try {
+          drag.card.setPointerCapture(e.pointerId);
+        } catch {
+          // Pointer already gone; window listeners still finish the drag.
+        }
+      }
+    }
+    if (drag.locked !== "x") return;
+    drag.dx = dx;
+    gsap.set(drag.card, { x: dx, rotation: dx * 0.06 });
+  };
+  const onUp = (e: PointerEvent) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const { card, dx, t0, locked } = drag;
+    drag = null;
+    if (locked !== "x") return;
+    const fast = Math.abs(dx) / Math.max(1, performance.now() - t0) > 0.6;
+    if (Math.abs(dx) < card.offsetWidth * 0.3 && !fast) {
+      gsap.to(card, { x: 0, rotation: 0, duration: 0.5, ease: "back.out(2)" });
+      return;
+    }
+    const dir = Math.sign(dx) || 1;
+    gone += 1;
+    const last = gone === cards.length;
+    gsap.to(card, {
+      x: dir * window.innerWidth,
+      rotation: dir * 24,
+      autoAlpha: 0,
+      duration: 0.45,
+      ease: "power2.in",
+      onComplete: last ? () => void gsap.delayedCall(0.35, deal) : undefined,
+    });
+  };
+
+  pileEl.addEventListener("pointerdown", onDown);
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  return () => {
+    pileEl.removeEventListener("pointerdown", onDown);
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    gsap.killTweensOf(cards);
+    gsap.killTweensOf(deal);
+    gsap.set(cards, { clearProps: "x,y,rotation,opacity,visibility" });
+    cards.forEach((c) => (c.style.touchAction = ""));
+    if (hint) hint.hidden = true;
+  };
+}
+
+/**
  * 03 — Complications. The main storytelling moment.
  *
  * Desktop with motion: the stage pins for ~1.8 viewports. Four fragments pile
@@ -139,6 +225,7 @@ export function Friction() {
           stagger: 0.22,
           scrollTrigger: { trigger: pileEl, start: "top 80%", once: true },
         });
+        const stopSwipe = swipePile(pileEl, q<HTMLElement>("[data-card]"), q<HTMLElement>("[data-swipe-hint]")[0]);
         gsap.from(q("[data-pile-caption]"), {
           opacity: 0,
           y: 12,
@@ -153,6 +240,7 @@ export function Friction() {
           stagger: 0.15,
           scrollTrigger: { trigger: q("[data-where]")[0], start: "top 85%", once: true },
         });
+        return stopSwipe;
       });
 
       return () => mm.revert();
@@ -206,6 +294,10 @@ export function Friction() {
             );
           })}
         </ol>
+        {/* Shown by swipePile (phones with motion), so it never promises a gesture that doesn't work. */}
+        <p data-swipe-hint hidden className="label mt-6 text-center text-mute lg:hidden">
+          Swipe the mess away
+        </p>
 
         {/* The pile's captions, as one short list (below lg only). */}
         <ol data-pile-captions className="mt-10 space-y-3 lg:hidden">
