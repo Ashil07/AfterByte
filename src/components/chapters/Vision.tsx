@@ -142,9 +142,17 @@ export function Vision() {
                         on ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
                       )}
                     >
-                      <p className="overflow-hidden pl-12 text-paper/70">
-                        <span className="block pb-6">{p.message}</span>
-                      </p>
+                      <div className="overflow-hidden pl-12">
+                        <p className="text-paper/70">{p.message}</p>
+                        {/* Phones: the illustration opens with its choice, compact and wide. */}
+                        <div
+                          aria-hidden
+                          className="relative mb-7 mt-5 aspect-[16/10] -rotate-1 overflow-hidden rounded-[1rem] border border-line bg-ink-2"
+                        >
+                          <Halftone shape={p.shape} spacing={6} seed={3} />
+                          <span className="label absolute bottom-3 left-4 text-paper/70">{plates[i].name}</span>
+                        </div>
+                      </div>
                     </div>
                   </li>
                 );
@@ -152,9 +160,9 @@ export function Vision() {
             </ul>
           </div>
 
-          {/* An illustration per starting point, drawn in halftone dots. On small
-              screens the message expands inline instead of in the caption. */}
-          <figure className="col-span-12 ml-auto w-[82%] max-w-[26rem] sm:w-[60%] lg:col-span-4 lg:col-start-9 lg:w-auto lg:max-w-none">
+          {/* Desktop: one card whose illustration morphs between the starting
+              points. Below lg each choice opens its own compact card inline. */}
+          <figure className="hidden lg:col-span-4 lg:col-start-9 lg:block">
             <div
               ref={card}
               data-card
@@ -169,7 +177,7 @@ export function Vision() {
                 {plates[index].name}
               </span>
             </div>
-            <figcaption aria-live="polite" className="mt-8 hidden min-h-[7.5rem] text-paper/70 lg:block">
+            <figcaption aria-live="polite" className="mt-8 min-h-[7.5rem] text-paper/70">
               {current?.message ?? neutral}
             </figcaption>
           </figure>

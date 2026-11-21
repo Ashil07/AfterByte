@@ -24,6 +24,8 @@ export function ApproachSignature() {
             strokeLinecap="round"
             strokeDasharray="1"
           />
+          {/* The pen tip: rides the end of the line while scrolling draws it. Hidden at rest. */}
+          <circle data-nib r={4} fill="currentColor" opacity={0} />
         </svg>
       </div>
       <p className="label mt-4 text-mute/80">

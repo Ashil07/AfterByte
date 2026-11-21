@@ -28,13 +28,33 @@ export function ApproachMotion({ children, className }: { children: ReactNode; c
             scrollTrigger: { trigger: line, start: "top 72%", once: true },
           });
         });
-        // Sign-off: the wordmark is written left to right, then the flourish.
-        const signature = el.querySelector("[data-signature]");
-        if (signature) {
+        // Sign-off: scrolling is the pen. The wordmark is written left to right,
+        // then the underline is drawn with the pen tip riding its end, which
+        // lifts off when done. Scroll back and it rewinds.
+        const signature = el.querySelector<HTMLElement>("[data-signature]");
+        const flourish = el.querySelector<SVGPathElement>("[data-flourish]");
+        const nib = el.querySelector<SVGCircleElement>("[data-nib]");
+        if (signature && flourish && nib) {
+          const length = flourish.getTotalLength();
+          const pen = { p: 0 };
+          const render = () => {
+            const pt = flourish.getPointAtLength(pen.p * length);
+            flourish.style.strokeDashoffset = String(1 - pen.p);
+            nib.setAttribute("cx", String(pt.x));
+            nib.setAttribute("cy", String(pt.y));
+            // Pen touches down as drawing starts and lifts off at the end.
+            nib.setAttribute("opacity", String(pen.p <= 0 ? 0 : Math.min(1, (1 - pen.p) * 12)));
+          };
+          render();
           gsap
-            .timeline({ scrollTrigger: { trigger: signature, start: "top 85%", once: true } })
-            .fromTo(signature, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.8, ease: "power2.inOut" })
-            .fromTo("[data-flourish]", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" }, "-=0.5");
+            .timeline({ scrollTrigger: { trigger: signature, start: "top 85%", end: "top 25%", scrub: 0.8 } })
+            .fromTo(signature, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "none" })
+            .to(pen, { p: 1, duration: 0.4, ease: "none", onUpdate: render });
+          return () => {
+            signature.style.clipPath = "";
+            flourish.style.strokeDashoffset = "";
+            nib.setAttribute("opacity", "0");
+          };
         }
       });
       mm.add(MOTION.mobile, () => {
