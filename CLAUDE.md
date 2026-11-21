@@ -19,15 +19,33 @@ accessible prices.
 - **Goal of the site:** a visitor arrives thinking they need a website and leaves seeing
   how AfterByte could make their business work better, then sends a project inquiry.
 
-It is a single-page, story-driven site (`/`) plus a contact API (`/api/contact`).
+Pages: the story (`/`), Selected work (`/work`), Contact (`/contact`), one plain
+reference page per service (`/services/[slug]`, for search) and a contact API
+(`/api/contact`). An About page is planned once real team content exists: add it to
+`src/content/pages.ts` and create `app/about/page.tsx`.
+
+**Page transitions** (`components/transition/PageTransition.tsx`, mounted in the
+layout): clicking any internal link to another page grows halftone dots out from the
+click until they cover the screen in `paper` with the destination’s name, the route
+changes underneath, then the dots shrink away. One capture-phase click listener
+handles plain `<a>` and `next/link` alike; same-page hash links, new tabs, modified
+clicks and downloads are left alone; reduced motion and back/forward skip the cover.
+Links to a home section from another page (`/#services`) wait under the cover for the
+section and ScrollTrigger’s pin spacing, then jump. `NextChapter` (the last thing on
+every page, below the footer) leads Home → Work → Contact → back to Home (“Back to the beginning”) and service pages → Contact:
+keep scrolling at the bottom (wheel ≈900px, touch ≈320px, ↓/Page Down/Space) and an ice
+line fills; when full it opens the next page through the transition. It drains if
+you stop, and is also a plain link. A half-filled form survives leaving Contact
+(visited pages stay mounted). Order lives in `nextPage()` in `src/content/pages.ts`.
 
 ## 2. Interactive narrative
 
 The visitor is the protagonist, their business is the challenge, AfterByte is the
 guide. Sections are numbered chapters; the desktop header shows the current one, so the in-section label (`ChapterMark`) is visible on phones and tablets only.
 
-**Currently hidden:** `work` and `team` are switched off (`enabled: false` in
-`src/content/chapters.ts`) until real projects and profiles are ready, and
+**Currently hidden:** `work` is off on the home page (projects live only on `/work`;
+the nav’s Work link stays), `team` is switched off (`enabled: false` in
+`src/content/chapters.ts`) until real profiles are ready, and
 `turning-point` is switched off because its closing line (“Where we come in”) now
 ends chapter 03. Their components and content are intact. Chapter numbers are
 assigned to enabled chapters only, so the live page runs 01–06 (Services = 04,
@@ -38,14 +56,14 @@ full nine-chapter sequence.
 | # | id | Story beat | What happens | Component |
 |---|----|-----------|--------------|-----------|
 | 01 | `top` | Possibility | Living version of the logo. Halftone light sweeps in from bottom-left while the wordmark gathers out of halftone dots drifting in along the light (`halftone/wordmarkAssembly.ts`, a plain rise if the image is not decoded yet; the footer reverses it), headline lines unmask, CTAs follow. Pointer light on desktop. Scene recedes on scroll. | `chapters/Opening.tsx` |
-| 02 | `vision` | Possibility | “You’ve got the vision.” Second line inks in word by word (scrub). Three starting points reshape a halftone figure (seed / growth / order; desktop only — on mobile each choice expands inline). Optional. | `chapters/Vision.tsx` |
-| 03 | `friction` | Friction | **Main moment.** Desktop: pinned ~3.4 viewports. Five UI fragments (search, messages, spreadsheet, reminders, idea note) pile up in disarray with their problem captions; headline yields to “You don’t need more complexity. You need a better system.”; fragments straighten into a row, swap messy faces for clean ones, joined by a line; the statement then fades up and out and “Where we come in — We design and build digital solutions around the way your business actually works.” rises into its place. Mobile: one shorter sentence after the cards instead (“You need a better system, built around how your business actually works.”); desktop reduced motion: both full lines in natural flow. | `chapters/friction/*` |
+| 02 | `vision` | Possibility | “You’ve got the vision.” Second line inks in word by word (scrub). Three starting points reshape an illustration drawn in halftone dots on a tilted, rounded card (`sprout` / `tree` / `cairn` in `halftone/field.ts`; the dots morph between them, each sets its own card angle, the card leans toward a mouse). On mobile the card sits below the list and each choice’s message expands inline. Optional. | `chapters/Vision.tsx` |
+| 03 | `friction` | Friction | **Main moment.** Desktop: pinned ~2.6 viewports. Five UI fragments (search, messages, spreadsheet, reminders, idea note) pile up in disarray with their problem captions; headline yields to “You don’t need more complexity. You need a better system.”; fragments straighten into a row, swap messy faces for clean ones, joined by a line; the statement then fades up and out and “Where we come in — We design and build digital solutions around the way your business actually works.” rises into its place. Mobile: one shorter sentence after the cards instead (“You need a better system, built around how your business actually works.”); desktop reduced motion: both full lines in natural flow. | `chapters/friction/*` |
 | 04 | `turning-point` | Discovery | **Hidden.** “What if everything just worked?” Scattered halftone resolves into three bands aligned with three rows of copy (website / software / automation). AfterByte introduced. On mobile/reduced motion it also shows the clean fragments (`.system-fallback`). | `chapters/TurningPoint.tsx` |
 | 05 | `services` | Transformation | Desktop: the heading and service copy share the left column, sticky panel right (it starts beside the heading) shows the matching demo assembled by scroll progress (website wireframe → site; app skeleton → screen; loose records → dashboard). Automation follows as a full-width four-step flow. Below lg: a swipeable deck, one card per service (tagline, one line, demo, “What’s included” on tap), with a tab row that sticks under the header and follows the swipe; native scroll-snap, demos play when their card is first shown; compact automation flow and narrower app demo keep card heights close. | `chapters/Services.tsx`, `chapters/ServiceDeck.tsx`, `chapters/demos/*` |
-| 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. | `chapters/Work.tsx` |
+| 06 | `work` | Proof | Editorial portfolio, three rotating compositions, clip-path image reveals, different hover per layout. On Home a preview (finished projects only, “See all work” → `/work`); `<Work page />` is the /work page with every project and an `h1`. | `chapters/Work.tsx`, `app/work/page.tsx` |
 | 07 | `team` | Connection | Staggered portraits from content data. | `chapters/Team.tsx` |
-| 08 | `approach` | Connection | Quiet: CSS-sticky statement + four principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). Still on desktop by design; on mobile each principle enters as reached (rule draws, numeral rises, copy follows). Below lg each principle shows only its title; tapping it opens the explanation (`ApproachPrinciple`). | `chapters/Approach.tsx`, `chapters/ApproachMotion.tsx`, `chapters/ApproachPrinciple.tsx` |
-| 09 | `contact` | Action | Closing halftone mirrors the opening and brightens on arrival; process steps; form. Footer carries the large wordmark as a bookend; on hover (fine pointer) it reverses the opening — the letters dissolve into halftone dots around the cursor and bulge away from it (`halftone/WordmarkHalftone.tsx`). | `chapters/contact/*`, `layout/SiteFooter.tsx` |
+| 08 | `approach` | Connection | CSS-sticky statement (“…within reach”, “Four promises we make in writing…”) + four principles on the main ink background (so it reads as a new chapter after the ink-2 Services section). Above each title, the line it replaces (`heard` in `content/approach.ts`) is struck through as it is reached; the list signs off with the wordmark written left to right (clip-path) and an ice flourish (`ApproachSignature`). On mobile each principle also enters as reached (rule draws, numeral rises, copy follows). Below lg each principle shows only its title; tapping it opens the explanation (`ApproachPrinciple`). | `chapters/Approach.tsx`, `chapters/ApproachMotion.tsx`, `chapters/ApproachPrinciple.tsx`, `chapters/ApproachSignature.tsx` |
+| 09 | `contact` | Action | Closing halftone mirrors the opening and brightens on arrival. On Home it is the closing scene and its button leads to `/contact`; `<Contact page />` is the /contact page: same scene with an `h1`, then “From idea to launch” (`ProcessPath`: a dotted path winding through the steps in `content/process.ts`, traced from the nodes’ real positions, revealed in ice and lighting each node as you scroll; a straight line on the left below lg), then every direct contact (phone, WhatsApp, email, socials, city) beside the form. Footer carries the large wordmark as a bookend; on hover (fine pointer) it reverses the opening — the letters dissolve into halftone dots around the cursor and bulge away from it (`halftone/WordmarkHalftone.tsx`). | `chapters/contact/*`, `layout/SiteFooter.tsx` |
 
 The story must read correctly with all animation disabled (verified with
 `prefers-reduced-motion: reduce`).
@@ -113,6 +131,8 @@ src/
     page.tsx               chapters in order
     globals.css            tokens, utilities, intro gating, pinned-scene CSS, panel crossfade
     api/contact/route.ts   POST handler (+ route.test.ts)
+    services/[slug]/page.tsx  one static page per service (SEO)
+    work/page.tsx contact/page.tsx  the Work and Contact pages
     sitemap.ts robots.ts icon.png apple-icon.png opengraph-image.jpg
     error.tsx not-found.tsx loading.tsx
   components/
@@ -123,11 +143,12 @@ src/
                            (hero intro), coverage.ts (wordmark alpha → dot sizes, shared by both)
     layout/                SiteHeader (nav with active section, rolling chapter indicator, animated
                            mobile menu), SiteFooter, Year,
-                           MobileActionBar (fixed “Start a project” + “Call” below lg)
+                           MobileActionBar (fixed “Start a project” + “Call” + “WhatsApp” below lg)
     motion/                gsap.ts (registration + MOTION queries), RevealText, Magnetic
+    transition/            PageTransition (dot cover between pages), NextChapter (footer panel)
     ui/                    Button/ButtonLink, ChapterMark
-  content/                 site, chapters, services, problems, projects, team, approach
-  lib/                     cn.ts; contact/{schema, deliver, rate-limit, events}.ts
+  content/                 site, pages, chapters, services, problems, projects, team, approach, process
+  lib/                     cn.ts; dom.ts (visibleById); contact/{schema, deliver, rate-limit, events}.ts
 ```
 
 **Server vs client:** `page.tsx`, `Approach`, `SiteFooter`, `ChapterMark`, `Button` are
@@ -147,7 +168,7 @@ projects, team, services or problems.
 - **Natural CSS state = final state.** Use `from`/`fromTo`; without JS, under reduced
   motion, or after a revert, everything is visible. Demo timelines are “primed”
   (`tl.progress(1).progress(0)`) so start states render before playback.
-- Reveals run once (`once: true`). Scrubbed timelines only for: hero recede, Vision ink,
+- Reveals run once (`once: true`). Scrubbed timelines only for: hero recede, Vision ink, Contact process path,
   Friction pin, 04 halftone morph (hidden), service demos (desktop), automation flow (desktop),
   closing illumination.
 - **Pinning:** only chapter 03, desktop only. It sets `data-pinned` on the section,
@@ -177,14 +198,18 @@ projects, team, services or problems.
 - **Reduced motion:** no transforms; halftone fields show their final shapes; the
   Services panel still switches demos (opacity only).
 - Never store per-frame scroll values in React state.
+- **cacheComponents keeps visited pages mounted but hidden** (React Activity), so an
+  id can exist twice in the document. Look elements up with `visibleById()`
+  (`lib/dom.ts`), not `document.getElementById`, and re-run layout-level observers
+  when `usePathname()` changes (the header and mobile bar do).
 
 ## 6. Contact form
 
 - Client: `chapters/contact/ContactForm.tsx`. Validates with the shared schema on submit
   and on blur, marks `aria-invalid`, links errors via `aria-describedby`, focuses the
   first invalid field, keeps values on failure, and shows success **only** when the API
-  returns `{ ok: true }`. Service CTAs preselect the service via a window event
-  (`lib/contact/events.ts`).
+  returns `{ ok: true }`. Service CTAs link to `/contact?service=<id>`
+  (`contactHref()` in `lib/contact/events.ts`) and the form preselects that choice.
 - Server: `app/api/contact/route.ts` → same-origin check → 20 KB limit → JSON parse →
   honeypot (`website`, silently accepted and dropped) → Zod → in-memory rate limit
   (5 per 10 min per IP, per instance) → `deliver()`.
@@ -193,9 +218,11 @@ projects, team, services or problems.
   Reply-To is the visitor. Subject is single-line; HTML body is escaped.
 - Responses: 200 ok · 400 invalid/bad_request · 403 forbidden · 413 too large ·
   429 rate_limited · **503 not_configured** · 502 delivery_failed. Each maps to honest UI copy.
-- Fields: name, email, company (optional), service, message. There is deliberately no
-  budget field. Phone, email, Instagram and location live in the footer's Contact
-  column, not beside the form.
+- Fields, in order: service (required) and timeline (optional), both tappable radio
+  “chips” (`Choices` in `ContactForm.tsx`; timeline options in `schema.ts`), then
+  name, email, company (optional), message (optional, no minimum). There is
+  deliberately no budget field. Phone, WhatsApp, email, Instagram and location live in
+  the footer's Contact column, not beside the form.
 
 ## 7. Content management
 
@@ -214,13 +241,19 @@ projects, team, services or problems.
   replacing an image, use a new filename — the Next image optimiser caches by URL.
 - **Team:** edit `src/content/team.ts`. Portraits in `public/team/` at 4:5. Real people,
   with consent, bios in their words.
-- **Services:** `src/content/services.ts` (title, `short` tab name for the phone deck, tagline, summary, capabilities, CTA).
+- **Services:** `src/content/services.ts` (title, `slug` for `/services/<slug>`, `short` tab name for the phone deck, tagline, summary, capabilities, CTA).
+  Each service also gets its own page (`app/services/[slug]/page.tsx`: h1 with the
+  city, capabilities, approach principles, other services, `Service` JSON-LD), listed
+  in the sitemap and linked from the footer. Shared header/footer/mobile-bar links use
+  `/#chapter` (via `next/link`) so they work from those pages; off the home page the
+  header is solid and hides the chapter indicator (`data-home="false"`).
   The four ids are referenced by demos and the form; adding a fifth needs a demo or a
   layout decision in `Services.tsx`.
 - **Contact details / socials:** `src/content/site.ts` (`email`, `phone` {display, tel},
-  `socials`). Empty values are hidden everywhere (footer, contact, form failure
+  `whatsapp` {number, message} → `whatsappHref`, `socials`). WhatsApp shows in the
+  mobile action bar, footer, form failure notice and service pages. Empty values are hidden everywhere (footer, contact, form failure
   message, JSON-LD). Current: email afterbytestudio.business@gmail.com, phone
-  +91 98456 35981, Instagram @afterbyte.studio.
+  +91 98456 35981 (also WhatsApp), Instagram @afterbyte.studio.
 - **SEO:** `src/content/site.ts` holds `seoTitle` (search-result title), `description`
   (keep ≈155–160 characters), `location` (Mangaluru / Mangalore, Karnataka) and
   `keywords`. `app/layout.tsx` turns these into metadata, `en-IN` locale, geo tags and
@@ -246,6 +279,8 @@ npm run lint           # ESLint (next core-web-vitals + typescript)
 npm run typecheck      # tsc --noEmit
 npm test               # Vitest: schema, delivery helpers, contact route
 npm run check          # lint + typecheck + test
+                       # Windows: run from "C:\…" (capital drive letter). From "c:\…" Vitest
+                       # loads itself twice and every suite fails with "failed to find the runner".
 npm run build && npm start
 npm run assets         # regenerate brand/placeholder images (needs Python 3 + Pillow, NumPy, SciPy)
 ```

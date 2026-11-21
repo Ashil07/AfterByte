@@ -1,5 +1,6 @@
 import "server-only";
 import { serviceOptions } from "@/content/services";
+import { timelineOptions } from "./schema";
 import type { ContactInput } from "./schema";
 
 /**
@@ -33,12 +34,13 @@ export function compose(input: ContactInput) {
     ["Email", input.email],
     ["Company", input.company || "—"],
     ["Service", service],
+    ["Timeline", timelineOptions.find((t) => t.value === input.timeline)?.label ?? "—"],
   ];
   const subject = oneLine(`New project inquiry — ${input.name} (${service})`);
   const text = `${fields.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\n${input.message}\n`;
   const html = `<table cellpadding="4">${fields
     .map(([k, v]) => `<tr><td><strong>${k}</strong></td><td>${escapeHtml(v)}</td></tr>`)
-    .join("")}</table><p style="white-space:pre-wrap">${escapeHtml(input.message)}</p>`;
+    .join("")}</table><p style="white-space:pre-wrap">${escapeHtml(input.message || "(No message)")}</p>`;
   return { subject, text, html };
 }
 

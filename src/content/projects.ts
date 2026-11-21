@@ -36,37 +36,15 @@ export const projects: Project[] = [
     url: "https://dulhan-demo.vercel.app/",
   },
   {
-    slug: "placeholder-website",
-    name: "Project name",
-    category: "Business website",
+    slug: "placeholder-clothing-store",
+    name: "Clothing store",
+    category: "Product · E-commerce clothing store",
     problem:
-      "Placeholder — describe the client’s problem in one or two sentences, in their words.",
+      "Placeholder — the problem this store solves for shop owners and their customers, in one or two sentences.",
     solution:
-      "Placeholder — describe what was designed and built, and how it addressed the problem.",
+      "Placeholder — what the product does: catalogue, checkout, orders and stock, and how it’s used.",
     technologies: ["Add", "Real", "Stack"],
     image: { src: "/work/placeholder-1.webp", alt: "Placeholder halftone artwork" },
-    placeholder: true,
-  },
-  {
-    slug: "placeholder-system",
-    name: "Project name",
-    category: "Booking & billing system",
-    problem:
-      "Placeholder — for example: bookings arrived through calls and messages, and invoices were written by hand.",
-    solution:
-      "Placeholder — for example: a booking calendar, automatic confirmations and invoices generated from each booking.",
-    technologies: ["Add", "Real", "Stack"],
-    image: { src: "/work/placeholder-2.webp", alt: "Placeholder halftone artwork" },
-    placeholder: true,
-  },
-  {
-    slug: "placeholder-app",
-    name: "Project name",
-    category: "Mobile app",
-    problem: "Placeholder — the problem this app was built to solve.",
-    solution: "Placeholder — the app’s core features and how people use it.",
-    technologies: ["Add", "Real", "Stack"],
-    image: { src: "/work/placeholder-3.webp", alt: "Placeholder halftone artwork" },
     placeholder: true,
   },
 ];

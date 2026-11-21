@@ -9,6 +9,12 @@ import { cn } from "@/lib/cn";
 
 type PossibilityId = (typeof possibilities)[number]["id"];
 const numerals = ["i", "ii", "iii"];
+/** Name of each illustration, and the card's resting tilt for it (degrees). */
+const plates = [
+  { name: "Seedling", tilt: -2.5 },
+  { name: "Growth", tilt: 1.8 },
+  { name: "Balance", tilt: -1.2 },
+];
 const neutral = "Wherever you start, we begin the same way: understand what you need, then build exactly that.";
 
 /**
@@ -19,6 +25,18 @@ export function Vision() {
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState<PossibilityId | null>(null);
   const current = possibilities.find((p) => p.id === active);
+  const index = current ? possibilities.indexOf(current) : 0;
+  const card = useRef<HTMLDivElement>(null);
+
+  // Each starting point gives the card its own resting angle.
+  useGSAP(
+    () => {
+      if (!card.current) return;
+      const still = window.matchMedia(MOTION.reduced).matches;
+      gsap.to(card.current, { rotation: plates[index].tilt, duration: still ? 0 : 1, ease: "expo.out" });
+    },
+    { dependencies: [index] },
+  );
 
   useGSAP(
     () => {
@@ -37,6 +55,28 @@ export function Vision() {
             scrollTrigger: { trigger: "[data-ink]", start: "top 78%", end: "top 38%", scrub: 0.6 },
           },
         );
+        // The card leans gently toward the pointer (mouse only).
+        const plate = card.current;
+        const figure = plate?.parentElement;
+        if (plate && figure && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          const toX = gsap.quickTo(plate, "x", { duration: 0.8, ease: "power3.out" });
+          const toY = gsap.quickTo(plate, "y", { duration: 0.8, ease: "power3.out" });
+          const move = (e: PointerEvent) => {
+            const b = figure.getBoundingClientRect();
+            toX(((e.clientX - b.left) / b.width - 0.5) * 14);
+            toY(((e.clientY - b.top) / b.height - 0.5) * 10);
+          };
+          const leave = () => {
+            toX(0);
+            toY(0);
+          };
+          figure.addEventListener("pointermove", move);
+          figure.addEventListener("pointerleave", leave);
+          return () => {
+            figure.removeEventListener("pointermove", move);
+            figure.removeEventListener("pointerleave", leave);
+          };
+        }
         gsap.from("[data-option]", {
           opacity: 0,
           y: 18,
@@ -112,15 +152,24 @@ export function Vision() {
             </ul>
           </div>
 
-          {/* Desktop only: on small screens the choices expand inline instead. */}
-          <figure className="hidden lg:col-span-4 lg:col-start-9 lg:block">
-            <div className="relative aspect-[4/5] border border-line bg-ink-2/40">
-              <Halftone shape={current?.shape ?? "seed"} spacing={10} seed={3} />
-              <span aria-hidden className="label absolute left-4 top-4 text-mute">
-                {current ? numerals[possibilities.indexOf(current)] : "—"}
+          {/* An illustration per starting point, drawn in halftone dots. On small
+              screens the message expands inline instead of in the caption. */}
+          <figure className="col-span-12 ml-auto w-[82%] max-w-[26rem] sm:w-[60%] lg:col-span-4 lg:col-start-9 lg:w-auto lg:max-w-none">
+            <div
+              ref={card}
+              data-card
+              style={{ transform: `rotate(${plates[0].tilt}deg)` }}
+              className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] border border-line bg-ink-2"
+            >
+              <Halftone shape={current?.shape ?? "sprout"} spacing={7} seed={3} />
+              <span aria-hidden className="label absolute left-5 top-5 text-mute">
+                {numerals[index]}.
+              </span>
+              <span aria-hidden className="label absolute bottom-5 left-5 text-paper/70">
+                {plates[index].name}
               </span>
             </div>
-            <figcaption aria-live="polite" className="mt-5 hidden min-h-[7.5rem] text-paper/70 lg:block">
+            <figcaption aria-live="polite" className="mt-8 hidden min-h-[7.5rem] text-paper/70 lg:block">
               {current?.message ?? neutral}
             </figcaption>
           </figure>

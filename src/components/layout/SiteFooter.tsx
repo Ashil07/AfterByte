@@ -1,6 +1,9 @@
 import { Fragment } from "react";
 import { WordmarkHalftone } from "@/components/halftone/WordmarkHalftone";
-import { site } from "@/content/site";
+import Link from "next/link";
+import { NextChapter } from "@/components/transition/NextChapter";
+import { services } from "@/content/services";
+import { site, whatsappHref } from "@/content/site";
 import { Year } from "./Year";
 
 /** Labels sit above their value on phones and beside it from `xs` up. */
@@ -29,6 +32,17 @@ export function SiteFooter() {
               {site.location.region} — freelance designers and developers building websites, apps, business software
               and automations.
             </p>
+            <nav aria-label="Services" className="mt-6">
+              <ul className="flex flex-wrap gap-x-5 text-[0.9375rem]">
+                {services.map((s) => (
+                  <li key={s.id}>
+                    <Link href={`/services/${s.slug}`} className={`${link} inline-block py-2.5`}>
+                      {s.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
           {/* Wide enough for the full email address at every breakpoint. */}
           <div className="col-span-12 sm:col-span-10 md:col-span-8 lg:col-span-5 lg:col-start-8">
@@ -40,6 +54,16 @@ export function SiteFooter() {
                   <dd>
                     <a href={`tel:${site.phone.tel}`} className={link}>
                       {site.phone.display}
+                    </a>
+                  </dd>
+                </>
+              )}
+              {whatsappHref && (
+                <>
+                  <dt className={term}>WhatsApp</dt>
+                  <dd>
+                    <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={link}>
+                      Message us ↗
                     </a>
                   </dd>
                 </>
@@ -69,9 +93,9 @@ export function SiteFooter() {
                 {site.location.city}, {site.location.region}
               </dd>
             </dl>
-            <a href="#contact-form" className="label mt-4 inline-block py-3.5 text-ice transition-colors hover:text-paper">
+            <Link href="/contact" className="label mt-4 inline-block py-3.5 text-ice transition-colors hover:text-paper">
               Start a project →
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -81,11 +105,12 @@ export function SiteFooter() {
           <p>
             © <Year /> {site.name}
           </p>
-          <a href="#top" className="inline-block py-3.5 transition-colors hover:text-paper">
+          <Link href="/#top" className="inline-block py-3.5 transition-colors hover:text-paper">
             Back to the beginning ↑
-          </a>
+          </Link>
         </div>
       </div>
+      <NextChapter />
     </footer>
   );
 }

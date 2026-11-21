@@ -23,6 +23,14 @@ export function ApproachPrinciple({ principle, index }: { principle: Principle; 
         {String(index + 1).padStart(2, "0")}
       </span>
       <div data-copy>
+        {/* What they have heard elsewhere, crossed out as it is reached (ApproachMotion). */}
+        <p className="mb-3 font-serif text-[1.0625rem] italic text-mute md:mb-4 md:text-[1.1875rem]">
+          <span className="sr-only">Instead of </span>
+          <span className="relative inline-block">
+            {principle.heard}
+            <span data-strike aria-hidden className="absolute inset-x-[-0.2em] top-[55%] h-px origin-left bg-paper/55" />
+          </span>
+        </p>
         <div className="hidden lg:block">
           <h3 className={titleClass}>{principle.title}</h3>
           <p className="mt-3 max-w-[48ch] text-paper/70">{principle.body}</p>

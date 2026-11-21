@@ -43,6 +43,16 @@ export const site = {
   email: "afterbytestudio.business@gmail.com",
   /** Public phone number. `tel` is the dialable form; leave both empty to hide it. */
   phone: { display: "+91 98456 35981", tel: "+919845635981" },
+  /**
+   * WhatsApp chat. `number` is digits only with country code; leave it empty to
+   * hide every WhatsApp link. `message` pre-fills the first message.
+   */
+  whatsapp: { number: "919845635981", message: "Hi AfterByte, I’d like to talk about a project." },
   /** Real profiles only. */
   socials: [{ label: "Instagram", href: "https://www.instagram.com/afterbyte.studio/" }] as SocialLink[],
 } as const;
+
+/** wa.me link for the WhatsApp chat, or "" when no number is set. */
+export const whatsappHref = site.whatsapp.number
+  ? `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`
+  : "";

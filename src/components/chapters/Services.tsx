@@ -6,7 +6,7 @@ import { RevealText } from "@/components/motion/RevealText";
 import { ButtonLink } from "@/components/ui/Button";
 import { ChapterMark } from "@/components/ui/ChapterMark";
 import { services, type Service, type ServiceId } from "@/content/services";
-import { selectService } from "@/lib/contact/events";
+import { contactHref } from "@/lib/contact/events";
 import { AppDemo, assembleApp } from "./demos/AppDemo";
 import { AutomationFlow, assembleFlow } from "./demos/AutomationFlow";
 import { SystemsDemo, assembleSystems } from "./demos/SystemsDemo";
@@ -41,7 +41,7 @@ function ServiceText({ service }: { service: Service }) {
           </li>
         ))}
       </ul>
-      <ButtonLink href="#contact" variant="text" className="mt-6" onClick={() => selectService(service.id)}>
+      <ButtonLink href={contactHref(service.id)} variant="text" className="mt-6">
         {service.cta}
       </ButtonLink>
     </div>
@@ -174,7 +174,7 @@ export function Services() {
                   </li>
                 ))}
               </ul>
-              <ButtonLink href="#contact" variant="text" className="mt-5" onClick={() => selectService("automation")}>
+              <ButtonLink href={contactHref("automation")} variant="text" className="mt-5">
                 {automation.cta}
               </ButtonLink>
             </div>

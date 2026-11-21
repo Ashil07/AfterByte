@@ -3,12 +3,14 @@ import { ChapterMark } from "@/components/ui/ChapterMark";
 import { principles } from "@/content/approach";
 import { ApproachMotion } from "./ApproachMotion";
 import { ApproachPrinciple } from "./ApproachPrinciple";
+import { ApproachSignature } from "./ApproachSignature";
 
 /**
- * 08 — Our approach. Deliberately quiet: a sticky statement on the left, four
- * principles on the right. Affordability is framed as precision, not discount.
- * On mobile the principles enter one by one (ApproachMotion) and each opens on
- * tap (ApproachPrinciple); desktop is still and fully open.
+ * 08 — Our approach. A sticky statement on the left; on the right four
+ * principles, each replacing a line clients have heard elsewhere (struck through
+ * as it is reached), signed off with the wordmark written like a signature.
+ * Affordability is framed as precision, not discount. On mobile the principles
+ * also enter one by one and each opens on tap (ApproachPrinciple).
  */
 export function Approach() {
   return (
@@ -21,14 +23,20 @@ export function Approach() {
             <RevealText id="approach-title" className="display-l mt-8 max-w-[12ch] md:mt-10">
               Great digital solutions should be within <em className="italic">reach.</em>
             </RevealText>
+            <p className="mt-6 max-w-[30ch] text-paper/60 md:mt-8">
+              Four promises we make in writing, so you can hold us to them.
+            </p>
           </div>
         </div>
 
-        <ol className="col-span-12 lg:col-span-6 lg:col-start-7">
-          {principles.map((p, i) => (
-            <ApproachPrinciple key={p.title} principle={p} index={i} />
-          ))}
-        </ol>
+        <div className="col-span-12 lg:col-span-6 lg:col-start-7">
+          <ol>
+            {principles.map((p, i) => (
+              <ApproachPrinciple key={p.title} principle={p} index={i} />
+            ))}
+          </ol>
+          <ApproachSignature />
+        </div>
       </ApproachMotion>
     </section>
   );

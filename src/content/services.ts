@@ -2,6 +2,8 @@ export type ServiceId = "web" | "app" | "systems" | "automation";
 
 export type Service = {
   id: ServiceId;
+  /** URL of the service's own page: /services/<slug>. */
+  slug: string;
   number: string;
   title: string;
   /** One-word name for the phone deck's tabs. */
@@ -16,6 +18,7 @@ export type Service = {
 export const services: Service[] = [
   {
     id: "web",
+    slug: "web-design-development",
     number: "01",
     title: "Web Design & Development",
     short: "Websites",
@@ -32,6 +35,7 @@ export const services: Service[] = [
   },
   {
     id: "app",
+    slug: "app-development",
     number: "02",
     title: "App Development",
     short: "Apps",
@@ -48,6 +52,7 @@ export const services: Service[] = [
   },
   {
     id: "systems",
+    slug: "business-software",
     number: "03",
     title: "Business Systems",
     short: "Systems",
@@ -64,6 +69,7 @@ export const services: Service[] = [
   },
   {
     id: "automation",
+    slug: "ai-automation",
     number: "04",
     title: "AI & Automation",
     short: "Automation",

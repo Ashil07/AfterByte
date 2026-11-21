@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { startTransition, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { MOTION, gsap } from "@/components/motion/gsap";
 import { Button } from "@/components/ui/Button";
 import { serviceOptions } from "@/content/services";
-import { site } from "@/content/site";
-import { SERVICE_EVENT } from "@/lib/contact/events";
+import { site, whatsappHref } from "@/content/site";
+import { serviceFromUrl } from "@/lib/contact/events";
 import {
   HONEYPOT,
   contactSchema,
+  timelineOptions,
   fieldErrors,
   type ContactField,
   type ContactResponse,
@@ -18,8 +19,8 @@ import { cn } from "@/lib/cn";
 type Values = Record<ContactField, string>;
 type Status = "idle" | "submitting" | "success" | "error";
 
-const empty: Values = { name: "", email: "", company: "", service: "", message: "" };
-const order: ContactField[] = ["name", "email", "company", "service", "message"];
+const empty: Values = { name: "", email: "", company: "", service: "", timeline: "", message: "" };
+const order: ContactField[] = ["service", "timeline", "name", "email", "company", "message"];
 
 const failureCopy: Record<string, string> = {
   not_configured: "The form isn’t connected to our inbox yet, so your message was not sent.",
@@ -58,6 +59,58 @@ function Field({
   );
 }
 
+/** A row of tappable options (radio buttons styled as rectangular chips). */
+function Choices({
+  id,
+  legend,
+  hint,
+  options,
+  value,
+  error,
+  onChange,
+}: {
+  id: ContactField;
+  legend: string;
+  hint: string;
+  options: readonly { value: string; label: string }[];
+  value: string;
+  error?: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <fieldset
+      className="min-w-0"
+      aria-invalid={!!error || undefined}
+      aria-describedby={error ? `f-${id}-error` : undefined}
+    >
+      <legend className="label text-mute">
+        {legend} <span className="ml-2 normal-case tracking-normal text-mute/70">{hint}</span>
+      </legend>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {options.map((o, i) => (
+          <label key={o.value} className="relative">
+            <input
+              id={i === 0 ? `f-${id}` : undefined}
+              type="radio"
+              name={id}
+              value={o.value}
+              checked={value === o.value}
+              onChange={() => onChange(o.value)}
+              className="peer absolute inset-0 cursor-pointer appearance-none rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ice"
+            />
+            <span className="pointer-events-none flex min-h-11 items-center rounded-[2px] border border-line-strong px-4 text-[0.9375rem] text-paper/80 transition-colors duration-200 peer-checked:border-ice peer-checked:bg-ice/10 peer-checked:text-paper peer-hover:border-paper/40">
+              {o.label}
+            </span>
+          </label>
+        ))}
+      </div>
+      <p id={`f-${id}-error`} className={cn("mt-2 min-h-[1.25rem] text-[0.875rem] text-error", !error && "invisible")}>
+        {error}
+      </p>
+    </fieldset>
+  );
+}
+
 const control =
   "mt-2 w-full rounded-none border-0 border-b border-line-strong bg-transparent px-0 py-3 text-[1.0625rem] text-paper placeholder:text-mute/85 transition-colors duration-300 focus:border-ice focus:outline-none focus-visible:outline-none aria-[invalid=true]:border-error";
 
@@ -70,14 +123,10 @@ export function ContactForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
 
-  // Service CTAs elsewhere on the page preselect the service field.
+  // Service CTAs link to /contact?service=<id>; preselect that choice.
   useEffect(() => {
-    const onSelect = (e: Event) => {
-      const id = (e as CustomEvent<string>).detail;
-      setValues((v) => ({ ...v, service: id }));
-    };
-    window.addEventListener(SERVICE_EVENT, onSelect);
-    return () => window.removeEventListener(SERVICE_EVENT, onSelect);
+    const id = serviceFromUrl(window.location.search);
+    if (id) startTransition(() => setValues((v) => (v.service ? v : { ...v, service: id })));
   }, []);
 
   const validate = (next: Values) => {
@@ -176,6 +225,26 @@ export function ContactForm() {
 
   return (
     <form ref={formRef} noValidate onSubmit={onSubmit} aria-describedby="form-status" className="relative">
+      <div className="mb-6 grid gap-y-6">
+        <Choices
+          id="service"
+          legend="What can we build for you?"
+          hint="Pick the closest"
+          options={serviceOptions}
+          value={values.service}
+          error={errors.service}
+          onChange={(v) => update("service", v)}
+        />
+        <Choices
+          id="timeline"
+          legend="When would you like to launch?"
+          hint="Optional · a rough idea is fine"
+          options={timelineOptions}
+          value={values.timeline}
+          error={errors.timeline}
+          onChange={(v) => update("timeline", v)}
+        />
+      </div>
       <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
         <Field id="name" label="Name" error={errors.name}>
           <input
@@ -220,45 +289,18 @@ export function ContactForm() {
             aria-describedby={describe("company")}
           />
         </Field>
-        <Field id="service" label="What do you need?" error={errors.service}>
-          <select
-            id="f-service"
-            name="service"
-            className={cn(control, "appearance-none bg-[length:12px] bg-[right_0.25rem_center] bg-no-repeat", !values.service && "text-mute/80")}
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%2392949d' stroke-width='1.4'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E\")",
-            }}
-            value={values.service}
-            onChange={(e) => update("service", e.target.value)}
-            onBlur={() => onBlur("service")}
-            aria-invalid={!!errors.service}
-            aria-describedby={describe("service")}
-            required
-          >
-            <option value="" disabled className="bg-ink-2">
-              Choose one
-            </option>
-            {serviceOptions.map((o) => (
-              <option key={o.value} value={o.value} className="bg-ink-2 text-paper">
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field id="message" label="Tell us about the project" error={errors.message} className="sm:col-span-2">
+        <Field id="message" label="Anything else we should know?" optional error={errors.message} className="sm:col-span-2">
           <textarea
             id="f-message"
             name="message"
-            rows={5}
             className={cn(control, "resize-y")}
-            placeholder="What are you trying to do, and what’s getting in the way?"
+            rows={4}
+            placeholder="A sentence or two is plenty: what you’re trying to do, or what’s getting in the way."
             value={values.message}
             onChange={(e) => update("message", e.target.value)}
             onBlur={() => onBlur("message")}
             aria-invalid={!!errors.message}
             aria-describedby={describe("message")}
-            required
           />
         </Field>
       </div>
@@ -293,6 +335,15 @@ export function ContactForm() {
                 Or call us on{" "}
                 <a className="text-ice underline underline-offset-4" href={`tel:${site.phone.tel}`}>
                   {site.phone.display}
+                </a>
+                .
+              </p>
+            )}
+            {whatsappHref && (
+              <p className="mt-1 text-paper/70">
+                Or{" "}
+                <a className="text-ice underline underline-offset-4" href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                  message us on WhatsApp
                 </a>
                 .
               </p>

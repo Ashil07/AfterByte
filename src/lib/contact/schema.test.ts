@@ -33,7 +33,14 @@ describe("contactSchema", () => {
     expect(errors.name).toMatch(/name/i);
     expect(errors.email).toMatch(/valid email/i);
     expect(errors.service).toMatch(/choose/i);
-    expect(errors.message).toMatch(/20 characters/);
+    expect(errors.message).toBeUndefined();
+  });
+
+  it("treats timeline and message as optional, but rejects unknown timelines", () => {
+    const r = contactSchema.parse({ name: valid.name, email: valid.email, service: valid.service });
+    expect(r.message).toBe("");
+    expect(r.timeline).toBe("");
+    expect(contactSchema.safeParse({ ...valid, timeline: "yesterday" }).success).toBe(false);
   });
 
   it("ignores fields the form no longer sends", () => {

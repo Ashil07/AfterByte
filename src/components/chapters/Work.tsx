@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import { MOTION, gsap, useGSAP } from "@/components/motion/gsap";
 import { RevealText } from "@/components/motion/RevealText";
@@ -92,8 +93,13 @@ function Entry({ project, index }: { project: Project; index: number }) {
 }
 
 /** 06 — Selected work. Content comes from src/content/projects.ts. */
-export function Work() {
+/**
+ * On the home page (`page` false) this is a preview: finished projects only,
+ * with a link to /work. On /work it is the page itself, with every project.
+ */
+export function Work({ page = false }: { page?: boolean }) {
   const root = useRef<HTMLElement>(null);
+  const shown = page ? projects : projects.filter((p) => !p.placeholder);
   const hasPlaceholders = projects.some((p) => p.placeholder);
 
   useGSAP(
@@ -120,14 +126,14 @@ export function Work() {
   );
 
   return (
-    <section ref={root} id="work" aria-labelledby="work-title" className="relative pb-28 pt-24 md:pb-40 md:pt-36">
+    <section ref={root} id="work" aria-labelledby="work-title" className={cn("relative pb-28 md:pb-40", page ? "pt-[calc(var(--header-h)+4rem)] md:pt-[calc(var(--header-h)+6rem)]" : "pt-24 md:pt-36")}>
       <div className="frame">
-        <ChapterMark id="work" />
+        {page ? <p className="label text-mute">Selected work</p> : <ChapterMark id="work" />}
         <div className="grid-12 mt-8 gap-y-8 md:mt-10">
-          <RevealText id="work-title" className="display-l col-span-12 max-w-[16ch] lg:col-span-9">
+          <RevealText as={page ? "h1" : "h2"} id="work-title" className="display-l col-span-12 max-w-[16ch] lg:col-span-9">
             Ideas are good. <em className="italic text-paper/60">Working solutions are better.</em>
           </RevealText>
-          {hasPlaceholders && (
+          {page && hasPlaceholders && (
             <p className="col-span-12 max-w-[36ch] self-end text-paper/70 md:col-span-6 lg:col-span-3">
               We’re preparing detailed case studies. Until they’re published here, ask us and we’ll walk you
               through recent work.
@@ -136,10 +142,23 @@ export function Work() {
         </div>
 
         <div className="mt-20 space-y-24 md:mt-28 md:space-y-36">
-          {projects.map((p, i) => (
+          {shown.map((p, i) => (
             <Entry key={p.slug} project={p} index={i} />
           ))}
         </div>
+        {!page && (
+          <Link
+            href="/work"
+            className="group mt-20 flex items-baseline justify-between gap-6 border-y border-line py-8 md:mt-28"
+          >
+            <span className="font-serif text-[clamp(1.75rem,3.4vw,3rem)] leading-none">
+              See all <em className="text-ice">work</em>
+            </span>
+            <span className="label text-mute transition-colors group-hover:text-paper">
+              {projects.length} projects →
+            </span>
+          </Link>
+        )}
       </div>
     </section>
   );

@@ -6,6 +6,7 @@ const input = {
   email: "asha@example.com",
   company: "",
   service: "web" as const,
+  timeline: "asap" as const,
   message: "<script>alert(1)</script> We need a site.",
 };
 

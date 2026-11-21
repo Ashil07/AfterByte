@@ -8,9 +8,9 @@
 export type FieldShape =
   | "hero" // logo-like diagonal light, dark centre for the wordmark
   | "closing" // mirrored hero, used at the end of the story
-  | "seed" // one point of light — starting something new
-  | "growth" // rising columns — growing a business
-  | "order" // tidy modules — simpler everyday work
+  | "sprout" // a seedling breaking the soil — starting something new
+  | "tree" // a branching tree — growing a business
+  | "cairn" // balanced stones over still water — simpler everyday work
   | "scatter" // noisy, disconnected — the problem
   | "strata"; // three aligned bands — website, software, automation
 
@@ -76,6 +76,132 @@ function heroAt(u: number, v: number, seed: number) {
   return [clamp01(i), tone] as const;
 }
 
+
+/*
+ * Illustrations for chapter 02, drawn as pure fields so they morph into each
+ * other like every other shape. x is centred and aspect-corrected (card width
+ * ≈ 0.8), y runs 0 (top) → 1 (bottom). Tone 0 = warm white, 1 = pale blue.
+ */
+
+/** Distance from p to the segment a→b. */
+function segDist(px: number, py: number, ax: number, ay: number, bx: number, by: number) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
+  const ex = px - ax - t * dx;
+  const ey = py - ay - t * dy;
+  return Math.sqrt(ex * ex + ey * ey);
+}
+
+/** A pointed leaf from `base` along `angle` (radians, 0 = right, negative = up). */
+function leaf(x: number, y: number, bx: number, by: number, angle: number, len: number, width: number) {
+  const dx = Math.cos(angle);
+  const dy = Math.sin(angle);
+  const half = len / 2;
+  const qx = (x - bx) * dx + (y - by) * dy - half;
+  const qy = -(x - bx) * dy + (y - by) * dx;
+  if (Math.abs(qx) >= half) return -1;
+  const edge = width * (1 - (qx / half) ** 2);
+  return Math.abs(qy) < edge ? (qx + half) / len : -1;
+}
+
+/** I — a seed in the soil, a curved stem and two leaves under a warm light. */
+function sproutAt(x: number, y: number, u: number, ambient: number, seed: number): readonly [number, number] {
+  let i = ambient * 0.5 + 0.34 * Math.exp(-(x * x + (y - 0.36) ** 2) / 0.035);
+  let t = 0.08;
+  const ground = 0.8 - 0.045 * Math.exp(-(x * x) / 0.05);
+  if (y > ground) {
+    i = Math.max(i, (0.2 + 0.3 * noise(u * 34, y * 34, seed + 5)) * (1 - Math.min(1, (y - ground) * 2.6)));
+    t = 0.04;
+  }
+  if ((x / 0.045) ** 2 + ((y - 0.835) / 0.026) ** 2 < 1) return [0.95, 0];
+  const stemTop = 0.47;
+  const stemX = (yy: number) => 0.035 * Math.sin((0.83 - yy) * 7);
+  if (y > stemTop && y < 0.83 && Math.abs(x - stemX(y)) < 0.009 + 0.004 * ((y - stemTop) / 0.36)) return [0.86, 0.7];
+  const tx = stemX(stemTop);
+  const right = leaf(x, y, tx, stemTop, -0.5, 0.24, 0.05);
+  const left = leaf(x, y, tx, stemTop + 0.02, Math.PI + 0.62, 0.18, 0.04);
+  const l = Math.max(right, left);
+  if (l >= 0) return [0.52 + 0.42 * l, 0.85];
+  return [clamp01(i), t];
+}
+
+type Branch = { ax: number; ay: number; bx: number; by: number; w: number };
+let treeCache: { seed: number; branches: Branch[]; tips: [number, number][] } | null = null;
+
+function treeParts(seed: number) {
+  if (treeCache?.seed === seed) return treeCache;
+  const branches: Branch[] = [];
+  const tips: [number, number][] = [];
+  const grow = (x: number, y: number, angle: number, len: number, w: number, depth: number) => {
+    const bx = x + Math.cos(angle) * len;
+    const by = y + Math.sin(angle) * len;
+    branches.push({ ax: x, ay: y, bx, by, w });
+    if (depth === 0) {
+      tips.push([bx, by]);
+      return;
+    }
+    const spread = 0.38 + 0.16 * hash(depth, branches.length, seed);
+    const lean = (hash(branches.length, depth, seed + 3) - 0.5) * 0.24;
+    grow(bx, by, angle - spread + lean, len * 0.74, w * 0.66, depth - 1);
+    grow(bx, by, angle + spread + lean, len * 0.7, w * 0.66, depth - 1);
+  };
+  grow(0, 0.9, -Math.PI / 2, 0.22, 0.022, 6);
+  treeCache = { seed, branches, tips };
+  return treeCache;
+}
+
+/** II — a branching tree: trunk in warm light, canopy turning pale blue as it rises. */
+function treeAt(x: number, y: number, u: number, ambient: number, seed: number): readonly [number, number] {
+  const { branches, tips } = treeParts(seed);
+  for (const b of branches) {
+    if (segDist(x, y, b.ax, b.ay, b.bx, b.by) < b.w * 0.5 + 0.004) return [0.88, 0.12 + 0.5 * (0.9 - y)];
+  }
+  let canopy = 0;
+  for (const [tx, ty] of tips) {
+    const d = Math.sqrt((x - tx) ** 2 + (y - ty) ** 2);
+    if (d < 0.068) canopy = Math.max(canopy, 1 - d / 0.068);
+  }
+  if (canopy > 0 && noise(u * 40, y * 40, seed + 9) < 0.35 + canopy * 0.6) return [0.4 + 0.45 * canopy, 0.92];
+  if (y > 0.9 && y < 0.92 && Math.abs(x) < 0.34) return [0.3, 0.2];
+  return [clamp01(ambient * 0.5 + 0.14 * Math.exp(-(x * x + (y - 0.45) ** 2) / 0.09)), 0.6];
+}
+
+const stones = [
+  { w: 0.19, h: 0.062, dx: 0 },
+  { w: 0.15, h: 0.054, dx: 0.012 },
+  { w: 0.115, h: 0.047, dx: -0.01 },
+  { w: 0.083, h: 0.04, dx: 0.008 },
+  { w: 0.052, h: 0.032, dx: -0.004 },
+];
+const WATER = 0.84;
+
+/** Which stone (and its local -1..1 coords) covers a point, or null. */
+function stoneAt(x: number, y: number) {
+  let floor = WATER;
+  for (const s of stones) {
+    const cy = floor - s.h;
+    const nx = (x - s.dx) / s.w;
+    const ny = (y - cy) / (s.h * 0.9);
+    if (Math.abs(nx) ** 2.4 + Math.abs(ny) ** 2.4 < 1) return { nx, ny };
+    floor = cy - s.h;
+  }
+  return null;
+}
+
+/** III — balanced stones lit from the top-left, mirrored in still water, a pale moon. */
+function cairnAt(x: number, y: number, u: number, ambient: number, seed: number): readonly [number, number] {
+  const st = stoneAt(x, y);
+  if (st) return [clamp01(0.42 + 0.42 * Math.max(0, -0.55 * st.nx - 0.8 * st.ny) + 0.08), 0.12];
+  if ((x - 0.2) ** 2 + (y - 0.2) ** 2 < 0.05 ** 2) return [0.62, 0.9];
+  if (y > WATER) {
+    const mirrored = stoneAt(x + 0.006 * Math.sin(y * 90), 2 * WATER - y);
+    if (mirrored && Math.sin(y * 260) > -0.2) return [0.2, 0.85];
+    if (y < WATER + 0.012 && Math.abs(x) < 0.36) return [0.34, 0.6];
+    return [clamp01(ambient * 0.4 + 0.08 * noise(u * 20, y * 60, seed)), 0.85];
+  }
+  return [clamp01(ambient * 0.5 + 0.1 * Math.exp(-((x - 0.2) ** 2 + (y - 0.2) ** 2) / 0.02)), 0.8];
+}
 export function fieldAt(shape: FieldShape, u: number, v: number, aspect: number, seed = 7): readonly [number, number] {
   const ambient = 0.05 + 0.06 * noise(u * 12, v * 12, seed + 11);
   switch (shape) {
@@ -92,42 +218,12 @@ export function fieldAt(shape: FieldShape, u: number, v: number, aspect: number,
       const m = smoothstep(0.08, 0.2, v) * (1 - smoothstep(0.84, 0.92, v)) * (1 - smoothstep(0.45, 0.75, u));
       return [i * (1 - 0.8 * m), t];
     }
-    case "seed": {
-      const x = (u - 0.5) * aspect;
-      const y = v - 0.55;
-      const d = Math.sqrt(x * x + y * y);
-      const core = Math.exp(-(d * d) / 0.012);
-      const halo = 0.22 * Math.exp(-(d * d) / 0.08);
-      return [clamp01(core + halo + ambient * 0.6), clamp01(0.25 + 0.6 * d)];
-    }
-    case "growth": {
-      const bars = 5;
-      const left = 0.14;
-      const right = 0.86;
-      const slot = (right - left) / bars;
-      const k = Math.floor((u - left) / slot);
-      let i = ambient * 0.7;
-      if (k >= 0 && k < bars) {
-        const local = (u - left - k * slot) / slot;
-        const inBar = local > 0.18 && local < 0.82 ? 1 : 0;
-        const top = 0.78 - (k + 1) * 0.12;
-        if (inBar && v > top && v < 0.84) i = 0.5 + 0.5 * smoothstep(top, top + 0.06, v) * (0.55 + k * 0.1);
-      }
-      return [clamp01(i), clamp01(0.2 + u * 0.7)];
-    }
-    case "order": {
-      const cols = 3;
-      const rows = 2;
-      const gu = (u - 0.12) / 0.76;
-      const gv = (v - 0.22) / 0.56;
-      let i = ambient * 0.6;
-      if (gu > 0 && gu < 1 && gv > 0 && gv < 1) {
-        const cu = (gu * cols) % 1;
-        const cv = (gv * rows) % 1;
-        if (cu > 0.1 && cu < 0.9 && cv > 0.12 && cv < 0.88) i = 0.62 + 0.18 * (1 - cv);
-      }
-      return [clamp01(i), 0.55];
-    }
+    case "sprout":
+      return sproutAt((u - 0.5) * aspect, v, u, ambient, seed);
+    case "tree":
+      return treeAt((u - 0.5) * aspect, v, u, ambient, seed);
+    case "cairn":
+      return cairnAt((u - 0.5) * aspect, v, u, ambient, seed);
     case "scatter": {
       const r = hash(Math.floor(u * 400), Math.floor(v * 400), seed);
       const patch = noise(u * 6, v * 6, seed + 2);

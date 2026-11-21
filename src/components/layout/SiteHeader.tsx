@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { chapters, navigation } from "@/content/chapters";
 import { MOTION, gsap, useGSAP } from "@/components/motion/gsap";
 import { ButtonLink } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { visibleById } from "@/lib/dom";
 
 /**
  * Fixed header. Transparent over the opening (where the large wordmark lives),
@@ -13,6 +16,8 @@ import { cn } from "@/lib/cn";
  * IntersectionObservers writing directly to the DOM (no React re-render on scroll).
  */
 export function SiteHeader() {
+  // The header persists across pages: re-observe the new page's sections.
+  const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const numberRef = useRef<HTMLSpanElement>(null);
   const titleRef = useRef<HTMLSpanElement>(null);
@@ -25,12 +30,18 @@ export function SiteHeader() {
       const header = headerRef.current;
       if (!header) return;
       // Solid header once the opening no longer reaches into the top 12% of the viewport.
-      const hero = document.getElementById("top");
+      const hero = visibleById("top");
       const heroIo = new IntersectionObserver(([entry]) => (header.dataset.past = String(!entry.isIntersecting)), {
         rootMargin: "0px 0px -88% 0px",
       });
-      if (hero) heroIo.observe(hero);
-      else header.dataset.past = "true";
+      if (hero) {
+        heroIo.observe(hero);
+        delete header.dataset.home;
+      } else {
+        // Off the home page (e.g. a service page): solid header, no chapter indicator.
+        header.dataset.past = "true";
+        header.dataset.home = "false";
+      }
 
       const links = Array.from(header.querySelectorAll<HTMLAnchorElement>("[data-nav-link]"));
 
@@ -59,7 +70,7 @@ export function SiteHeader() {
         { rootMargin: "-45% 0px -55% 0px" },
       );
       chapters.forEach((c) => {
-        const el = document.getElementById(c.id);
+        const el = visibleById(c.id);
         if (el) io.observe(el);
       });
       return () => {
@@ -67,7 +78,7 @@ export function SiteHeader() {
         heroIo.disconnect();
       };
     },
-    { scope: headerRef },
+    { scope: headerRef, dependencies: [pathname], revertOnUpdate: true },
   );
 
   /** Fade the menu out, then hide it. Links skip this: the page jumps away anyway. */
@@ -136,15 +147,15 @@ export function SiteHeader() {
       className="group/header fixed inset-x-0 top-0 z-50 h-[var(--header-h)] transition-colors duration-500 data-[past=true]:border-b data-[past=true]:border-line data-[past=true]:bg-ink/92"
     >
       <div className="frame flex h-full items-center justify-between gap-6">
-        <a
-          href="#top"
+        <Link
+          href="/#top"
           className="relative flex h-11 items-center transition-opacity duration-500 lg:group-data-[past=false]/header:pointer-events-none lg:group-data-[past=false]/header:opacity-0"
           aria-label="AfterByte — back to top"
         >
           <Image src="/brand/wordmark.png" alt="" width={1706} height={514} className="h-6 w-auto" priority />
-        </a>
+        </Link>
 
-        <p aria-hidden className="label hidden items-center gap-3 text-mute lg:flex">
+        <p aria-hidden className="label hidden items-center gap-3 text-mute lg:flex lg:group-data-[home=false]/header:hidden">
           <span className="inline-block overflow-hidden">
             <span ref={numberRef} className="block text-paper">
               01
@@ -168,7 +179,7 @@ export function SiteHeader() {
               </li>
             ))}
           </ul>
-          <ButtonLink href="#contact" className="h-10 px-4 text-[0.875rem]">
+          <ButtonLink href="/contact" className="h-10 px-4 text-[0.875rem]">
             Start a project
           </ButtonLink>
         </nav>
@@ -212,14 +223,14 @@ export function SiteHeader() {
           <ol className="flex flex-col">
             {chapters.slice(1).map((c) => (
               <li key={c.id} data-menu-item className="rule">
-                <a href={`#${c.id}`} onClick={() => setOpen(false)} className="flex items-baseline gap-4 py-3.5">
+                <a href={`/#${c.id}`} onClick={() => setOpen(false)} className="flex items-baseline gap-4 py-3.5">
                   <span className="label w-6 text-mute">{c.number}</span>
                   <span className="font-serif text-[2rem] leading-none">{c.title}</span>
                 </a>
               </li>
             ))}
           </ol>
-          <ButtonLink href="#contact" data-menu-item onClick={() => setOpen(false)} className="self-start">
+          <ButtonLink href="/contact" data-menu-item onClick={() => setOpen(false)} className="self-start">
             Start a project
           </ButtonLink>
         </nav>

@@ -9,7 +9,7 @@ import { cleanFaces, messyFaces } from "./faces";
 /**
  * 03 — Complications. The main storytelling moment.
  *
- * Desktop with motion: the stage pins for ~3.4 viewports. Fragments pile up one
+ * Desktop with motion: the stage pins for ~2.6 viewports. Fragments pile up one
  * by one in disarray (accumulation), the headline gives way to the statement,
  * then every fragment straightens into an aligned row and swaps its messy face
  * for a clean one, joined by a single line: one system. Finally the statement
@@ -57,7 +57,7 @@ export function Friction() {
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: () => `+=${window.innerHeight * 3.4}`,
+            end: () => `+=${window.innerHeight * 2.6}`,
             pin: stage,
             scrub: 0.8,
             invalidateOnRefresh: true,

@@ -6,7 +6,7 @@ import { MOTION, ScrollTrigger, gsap, useGSAP } from "@/components/motion/gsap";
 import { ButtonLink } from "@/components/ui/Button";
 import { services, type Service, type ServiceId } from "@/content/services";
 import { cn } from "@/lib/cn";
-import { selectService } from "@/lib/contact/events";
+import { contactHref } from "@/lib/contact/events";
 import { AppDemo, assembleApp } from "./demos/AppDemo";
 import { AutomationFlow, assembleFlow } from "./demos/AutomationFlow";
 import { SystemsDemo, assembleSystems } from "./demos/SystemsDemo";
@@ -78,7 +78,7 @@ function Card({ service }: { service: Service }) {
         {demos[service.id].view}
       </div>
       <Included items={service.capabilities} />
-      <ButtonLink href="#contact" variant="text" className="mt-4" onClick={() => selectService(service.id)}>
+      <ButtonLink href={contactHref(service.id)} variant="text" className="mt-4">
         {service.cta}
       </ButtonLink>
     </article>

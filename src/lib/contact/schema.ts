@@ -3,16 +3,22 @@ import { z } from "zod";
 /** Shared by the form (client-side hints) and the API route (authoritative). */
 export const serviceValues = ["web", "app", "systems", "automation", "unsure"] as const;
 
+/** Rough launch window, tapped in the form. Optional. */
+export const timelineOptions = [
+  { value: "asap", label: "As soon as possible" },
+  { value: "3m", label: "Within 3 months" },
+  { value: "later", label: "In 3–6 months" },
+  { value: "exploring", label: "Just exploring" },
+] as const;
+export const timelineValues = ["asap", "3m", "later", "exploring"] as const;
+
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Please tell us your name.").max(100, "That name is a little long."),
   email: z.string().trim().max(200, "That email address is too long.").pipe(z.email("Please enter a valid email address.")),
   company: z.string().trim().max(120, "Please keep this under 120 characters.").optional().default(""),
   service: z.enum(serviceValues, "Choose the kind of help you need."),
-  message: z
-    .string()
-    .trim()
-    .min(20, "A few more details help — at least 20 characters.")
-    .max(5000, "Please keep this under 5,000 characters."),
+  timeline: z.union([z.enum(timelineValues), z.literal("")]).optional().default(""),
+  message: z.string().trim().max(5000, "Please keep this under 5,000 characters.").optional().default(""),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
