@@ -10,11 +10,35 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "h-12 rounded-[2px] bg-paper px-5 text-ink hover:-translate-y-px hover:bg-ice active:translate-y-0 active:scale-[0.97] active:duration-150",
+    "h-12 rounded-[2px] bg-paper px-5 text-ink [--fill:var(--color-ice)] hover:-translate-y-px active:translate-y-0 active:scale-[0.97] active:duration-150",
   outline:
-    "h-12 rounded-[2px] border border-line-strong px-5 text-paper hover:-translate-y-px hover:border-paper/60 active:translate-y-0 active:scale-[0.97] active:duration-150",
+    "h-12 rounded-[2px] border border-line-strong px-5 text-paper isolate [--fill:var(--color-paper)] *:not-first:mix-blend-difference hover:-translate-y-px hover:border-paper active:translate-y-0 active:scale-[0.97] active:duration-150",
   text: "min-h-11 py-2 text-paper after:absolute after:inset-x-0 after:bottom-2 after:h-px after:origin-left after:scale-x-[0.35] after:bg-current after:transition-transform after:duration-500 after:ease-out-soft hover:after:scale-x-100",
 };
+
+/**
+ * Hover fill for primary / outline buttons: a disc grows from where the
+ * pointer enters until it floods the button, and shrinks away towards where
+ * it leaves. Driven by HoverFill (one document listener for every [data-fill]
+ * button); colour comes from --fill. Text and arrow sit above it.
+ */
+function Fill({ variant }: { variant: Variant }) {
+  if (variant === "text") return null;
+  return <FillLayer />;
+}
+
+/**
+ * The fill's markup, for any element with `data-fill`: render it as the
+ * element's first child, give the element `relative` and a `--fill` colour,
+ * and keep its other children `relative` so they sit above the disc.
+ */
+export function FillLayer() {
+  return (
+    <span aria-hidden className="btn-fill">
+      <span data-fill-disc className="btn-fill-disc" />
+    </span>
+  );
+}
 
 const arrows = { right: ArrowRight, down: ArrowDownRight, up: ArrowUpRight } as const;
 
@@ -31,7 +55,7 @@ function ArrowIcon({ arrow }: { arrow: Arrow }) {
     <Icon
       aria-hidden
       strokeWidth={1.5}
-      className={cn("size-4 shrink-0 transition-transform duration-300 ease-out-soft", motion)}
+      className={cn("relative size-4 shrink-0 transition-transform duration-300 ease-out-soft", motion)}
     />
   );
 }
@@ -46,8 +70,9 @@ export function ButtonLink({
   ...rest
 }: Common & AnchorHTMLAttributes<HTMLAnchorElement>) {
   return (
-    <a className={cn(base, variants[variant], className)} {...rest}>
-      <span>{children}</span>
+    <a data-fill={variant === "text" ? undefined : ""} className={cn(base, variants[variant], className)} {...rest}>
+      <Fill variant={variant} />
+      <span className="relative">{children}</span>
       <ArrowIcon arrow={arrow} />
     </a>
   );
@@ -62,8 +87,14 @@ export function Button({
   ...rest
 }: Common & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button type={type} className={cn(base, variants[variant], className)} {...rest}>
-      <span>{children}</span>
+    <button
+      type={type}
+      data-fill={variant === "text" ? undefined : ""}
+      className={cn(base, variants[variant], className)}
+      {...rest}
+    >
+      <Fill variant={variant} />
+      <span className="relative">{children}</span>
       <ArrowIcon arrow={arrow} />
     </button>
   );

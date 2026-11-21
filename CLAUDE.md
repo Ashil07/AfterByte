@@ -113,7 +113,13 @@ fades from a halftone into the page background.
   chapter; avoid centering everything and repeated card grids.
 - Buttons (`ui/Button.tsx`) are rectangular (2px radius): `primary`, `outline`, `text`.
   Primary/outline press down to `scale(0.97)` in 150ms.
-  Arrows nudge on hover; primary lifts 1px. No pills.
+  Arrows nudge on hover; primary lifts 1px. No pills. On hover, a disc grows from the point the
+  mouse enters until it floods primary (ice) and outline (paper) buttons, and shrinks
+  away towards where it leaves (`motion/HoverFill.tsx`, one document listener for every
+  `[data-fill]` element; `.btn-fill` in `globals.css`; `FillLayer` from `ui/Button.tsx`
+  adds it to non-Button links such as the `MobileActionBar` buttons). Outline text uses
+  `mix-blend-difference` so it flips colour at the fill's edge. Mouse only; keyboard
+  focus fills from the centre; instant under reduced motion.
 - Breakpoints: Tailwind defaults plus `xs` (30rem). Desktop storytelling starts at `lg` (1024px).
 
 ## 4. Architecture
@@ -148,7 +154,7 @@ src/
     layout/                SiteHeader (page links Home/Work/Contact from `pages.ts`, rolling chapter
                            indicator, animated mobile menu: pages large, home chapters small), SiteFooter, Year,
                            MobileActionBar (fixed “Start a project” + “Call” + “WhatsApp” below lg)
-    motion/                gsap.ts (registration + MOTION queries), RevealText, Magnetic
+    motion/                gsap.ts (registration + MOTION queries), RevealText, Magnetic, HoverFill
     transition/            PageTransition (dot cover between pages), NextChapter (footer panel)
     ui/                    Button/ButtonLink, ChapterMark
   content/                 site, pages, chapters, services, problems, projects, team, approach, process

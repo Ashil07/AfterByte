@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { MobileActionBar } from "@/components/layout/MobileActionBar";
+import { HoverFill } from "@/components/motion/HoverFill";
 import { PageTransition } from "@/components/transition/PageTransition";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { services } from "@/content/services";
@@ -166,6 +167,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </main>
         <SiteFooter />
         <MobileActionBar />
+        <HoverFill />
         <PageTransition />
       </body>
     </html>

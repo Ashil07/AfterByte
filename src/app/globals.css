@@ -232,3 +232,22 @@ body {
 .demo-scroll::-webkit-scrollbar {
   display: none;
 }
+
+/* ---------- Button hover fill (ui/Button.tsx + motion/HoverFill.tsx) ----------
+   A disc, positioned and scaled by GSAP, floods the button from the pointer. */
+.btn-fill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.btn-fill-disc {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  background: var(--fill);
+  transform: scale(0);
+  will-change: transform;
+}

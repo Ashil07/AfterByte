@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, MessageCircle, Phone } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { FillLayer } from "@/components/ui/Button";
 import { site, whatsappHref } from "@/content/site";
 import { visibleById } from "@/lib/dom";
 
@@ -45,31 +46,37 @@ export function MobileActionBar() {
       <nav aria-label="Quick contact" className="frame flex items-center gap-2 py-3">
         <Link
           href="/contact"
-          className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-[2px] bg-paper px-4 text-[0.9375rem] text-ink transition-[background-color,scale] duration-150 ease-out-soft active:scale-[0.97] active:bg-ice"
+          data-fill
+          className="relative inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-[2px] bg-paper px-4 text-[0.9375rem] text-ink transition-[background-color,scale] duration-150 ease-out-soft [--fill:var(--color-ice)] *:not-first:relative active:scale-[0.97] active:bg-ice"
         >
-          Start a project
+          <FillLayer />
+          <span>Start a project</span>
           <ArrowRight aria-hidden strokeWidth={1.5} className="size-4 max-xs:hidden" />
         </Link>
         {site.phone.tel && (
           <a
             href={`tel:${site.phone.tel}`}
+            data-fill
             aria-label={`Call AfterByte on ${site.phone.display}`}
-            className="inline-flex h-12 min-w-12 items-center justify-center gap-2 rounded-[2px] border border-line-strong px-4 text-[0.9375rem] text-paper transition-[border-color,scale] duration-150 ease-out-soft active:scale-[0.97] active:border-paper/60"
+            className="relative inline-flex h-12 min-w-12 items-center justify-center gap-2 rounded-[2px] border border-line-strong px-4 text-[0.9375rem] text-paper isolate transition-[border-color,scale] duration-150 ease-out-soft [--fill:var(--color-paper)] [&>svg]:relative [&>svg]:mix-blend-difference active:scale-[0.97] active:border-paper/60"
           >
+            <FillLayer />
             <Phone aria-hidden strokeWidth={1.5} className="size-4" />
-            <span className="max-xs:sr-only">Call</span>
+            <span className="relative mix-blend-difference max-xs:sr-only">Call</span>
           </a>
         )}
         {whatsappHref && (
           <a
             href={whatsappHref}
+            data-fill
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat with AfterByte on WhatsApp (opens WhatsApp)"
-            className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-[2px] border border-line-strong px-3.5 text-[0.9375rem] text-paper transition-[border-color,scale] duration-150 ease-out-soft active:scale-[0.97] active:border-paper/60"
+            className="relative inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-[2px] border border-line-strong px-3.5 text-[0.9375rem] text-paper isolate transition-[border-color,scale] duration-150 ease-out-soft [--fill:var(--color-paper)] *:not-first:relative *:not-first:mix-blend-difference active:scale-[0.97] active:border-paper/60"
           >
+            <FillLayer />
             <MessageCircle aria-hidden strokeWidth={1.5} className="size-4" />
-            WhatsApp
+            <span>WhatsApp</span>
           </a>
         )}
       </nav>
