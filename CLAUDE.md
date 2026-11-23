@@ -246,7 +246,7 @@ projects, team, services or problems.
   wide, webp/jpg). Remove `placeholder: true` once every field is real. `outcome` only
   if client-verified. Order in the array = order on the page; layouts rotate every 3.
   `problem`, `solution` and `technologies` are optional: a real project without a
-  written case study (e.g. Dulhan) shows “Case study details to be added”.
+  written case study (e.g. Dulhan) shows just its category, name and link.
   Prefer a screenshot of the live product over a logo; set `image.position` (CSS
   object-position) when the important part of a screenshot is off-centre. When
   replacing an image, use a new filename — the Next image optimiser caches by URL.

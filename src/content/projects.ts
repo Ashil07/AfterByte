@@ -7,7 +7,7 @@
  *   Leave it undefined rather than estimating.
  * - Keep `placeholder: true` until every field below is real; the UI labels it.
  * - For a real project whose case study isn't written yet, leave `problem`,
- *   `solution` and `technologies` out; the UI says the details are to be added.
+ *   `solution` and `technologies` out; the entry then shows just its name and link.
  */
 export type Project = {
   slug: string;
@@ -36,15 +36,14 @@ export const projects: Project[] = [
     url: "https://dulhan-demo.vercel.app/",
   },
   {
-    slug: "placeholder-clothing-store",
-    name: "Clothing store",
-    category: "Product · E-commerce clothing store",
-    problem:
-      "Placeholder — the problem this store solves for shop owners and their customers, in one or two sentences.",
-    solution:
-      "Placeholder — what the product does: catalogue, checkout, orders and stock, and how it’s used.",
-    technologies: ["Add", "Real", "Stack"],
-    image: { src: "/work/placeholder-1.webp", alt: "Placeholder halftone artwork" },
-    placeholder: true,
+    slug: "shop-platform",
+    name: "Shop platform",
+    category: "Product · Online store, admin and billing for clothing shops",
+    image: {
+      src: "/work/shop-platform.webp",
+      alt: "AfterByte Shop platform page: “One shop platform. Any look you want.” beside a storefront preview",
+      position: "left top",
+    },
+    url: "https://cloth-store-gold.vercel.app/platform",
   },
 ];

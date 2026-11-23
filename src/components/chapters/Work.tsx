@@ -36,7 +36,6 @@ function Entry({ project, index }: { project: Project; index: number }) {
   if (project.solution) rows.push(["Solution", project.solution]);
   if (project.technologies?.length) rows.push(["Built with", project.technologies.join(" · ")]);
   if (project.outcome) rows.push(["Outcome", project.outcome]);
-  const pending = !project.placeholder && (!project.problem || !project.solution || !project.technologies?.length);
 
   return (
     <article data-project aria-labelledby={`p-${project.slug}`} className="group/p grid-12 gap-y-8">
@@ -81,11 +80,6 @@ function Entry({ project, index }: { project: Project; index: number }) {
               </div>
             ))}
           </dl>
-        )}
-        {pending && (
-          <p data-line className={cn("label mt-6 border-t border-line pt-3 text-mute", wide && "md:col-span-8")}>
-            Case study details to be added
-          </p>
         )}
       </div>
     </article>
